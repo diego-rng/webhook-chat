@@ -1,9 +1,18 @@
 # webhook-chat
 
-A Webhook-based chat application using Next.js and Deno frameworks as a base.
+Aplicação de chat usando Webhooks para conectar clientes e usando Frameworks do Deno.
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with
-[`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Histórico de Versões
+
+| Version |    Date    |                   What Changed                    |
+| :-----: | :--------: | :-----------------------------------------------: |
+|  0.1.0  | 2026-10-06 | README.md adaptado, base do projeto apresentada. |
+
+## Sumário
+
+## Visão Geral
+
+Aplicação baseada em Next.js e TypeScript usando Webhooks e frameworks do Deno para conectar usuários.
 
 ## Getting Started
 
@@ -17,7 +26,7 @@ yarn dev
 pnpm dev
 # or
 bun dev
-# or 
+# or
 deno run dev
 ```
 

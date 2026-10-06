@@ -6,7 +6,7 @@ const appDir = path.dirname(fileURLToPath(import.meta.url));
 
 const nextConfig: NextConfig = {
   turbopack: {
-    root: path.resolve(appDir, "../.."),
+    root: path.resolve(appDir, "./"),
   },
 };
 
