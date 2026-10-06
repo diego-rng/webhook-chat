@@ -1,55 +1,68 @@
-import Image from "next/image";
+"use client";
+import { useEffect, useRef, useState } from "react";
 
 export default function Home() {
-  
-  const WS_URI = "ws://127.0.0.1:8080";
-  const PING_INTERVAL_MS = 5000
-  const output = document.querySelector<HTMLDivElement>("#output");
-  if (!output) {
-    throw new Error("#output element not found");
-  }
-  
-  const websocket = new WebSocket(WS_URI);
-  let pingInterval: ReturnType<typeof setInterval> | undefined;
+  const port = 8080;
+  const [messages, setMessages] = useState<string[]>([]);
+  const [area, setArea] = useState<string>("");
+  const wsRef = useRef<WebSocket | null>(null);
 
-  function writeToScreen(message: string): void {
-    const p = document.createElement("p")
-    p.textContent = message;
-    output!.prepend(p);
-  }
-
-    function sendMessage(message: string): void {
-      writeToScreen(`SENT: ${message}`);
-      websocket.send(message);
-    }
-
-    websocket.onopen = (): void => {
-      writeToScreen("CONNECTED");
-      sendMessage("ping");
-      pingInterval = setInterval(() => {
-        sendMessage("ping");
-      }, PING_INTERVAL_MS);
+  useEffect(() => {
+    const ws = new WebSocket(`ws://localhost:${port}`);
+    wsRef.current = ws;
+    ws.onopen = () => {
+      console.log("[Client] Connected.");
+      ws.send(`Hello, this is the client`);
     };
 
-    websocket.onclose = (): void => {
-      writeToScreen("DISCONNECTED");
-      clearInterval(pingInterval);
-    }
+    ws.onmessage = (event) => {
+      console.log(`Received a message from the server: ${event.data}`);
+      setMessages((prev) => [...prev, event.data]);
+    };
 
-    websocket.onmessage = (e: MessageEvent<string>): void => {
-      writeToScreen(`RECEIVED: ${e.data}`)
-    }
+    ws.onclose = () => {
+      console.log("WebSocket disconnected");
+    };
 
-    websocket.onerror = (): void => {
-      writeToScreen(`ERROR: connection failed`)
+    ws.onerror = (error) => {
+      console.error(error);
+    };
+
+    console.log(`Listening at ${port}`);
+
+    return () => {
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
+    };
+  }, [messages, setMessages]);
+
+  function sendMessage(message: string) {
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      wsRef.current.send(message);
+      console.log(messages);
     }
+  }
+
   return (
-    <div>
-      <span>
-        WebSocket Test
-      </span>
-      <p>Ping every 5 seconds</p>
-      <div id="output"></div>
+    <div className="justify-self-center place-self-center p-2 bg-gray-900">
+      <div className="min-w-30 min-h-30">
+        {messages.map((message, index) => {
+          return <span key={index}>{message}</span>;
+        })}
+      </div>
+
+      <textarea
+        className="bg-gray-950"
+        onChange={(e) => {
+          setArea(e.target.value);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && area.length >= 1) {
+            sendMessage(area);
+          }
+        }}
+      />
     </div>
   );
 }

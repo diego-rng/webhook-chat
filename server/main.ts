@@ -1,22 +1,15 @@
-Deno.serve({
-  port: 8080,
-  async handler(request) {
-    if (request.headers.get("upgrade") !== "websocket") {
-      const file = await Deno.open("./index.html", { read: true })
-      return new Response(file.readable);
-    }
-    const {socket, response} = Deno.upgradeWebSocket(request);
+import { WebSocketServer } from 'ws'
 
-    socket.onopen = () => {
-      console.log("CONNECTED")
-    };
-    socket.onmessage = (event) => {
-      console.log(`RECEIVED: ${event.data}`);
-      socket.send("pong")
-    };
-    socket.onclose = () => console.log("DISCONNECTED");
-    socket.onerror = (error) => console.error("ERROR:", error)
+const port = 8080;
+const wss = new WebSocketServer({port});  
 
-    return response;
-  }
+wss.on('connection', (ws) => {
+  ws.on('message', (data) => {
+    console.log(`Received message from client: ${data}`);
+    ws.send(`Message received!`)
+  })
+
+  ws.send(`Hello, this is main.ts`)
 })
+
+console.log(`Listening at ${port}`)
