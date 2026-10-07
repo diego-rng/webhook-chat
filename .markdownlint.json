@@ -1,0 +1,7 @@
+{
+  "markdownlint.config": {
+    "default": true,
+    "MD013": { "line-length": false },
+    "MD060": { "table-column-style": false }
+  }
+}

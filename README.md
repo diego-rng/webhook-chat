@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD013 -->
 # webhook-chat
 
 Aplicação de chat usando Webhooks para conectar clientes e usando Frameworks do Deno.
@@ -6,13 +7,22 @@ Aplicação de chat usando Webhooks para conectar clientes e usando Frameworks d
 
 | Version |    Date    |                   What Changed                    |
 | :-----: | :--------: | :-----------------------------------------------: |
-|  0.1.0  | 2026-10-06 | README.md adaptado, base do projeto apresentada. |
+|  0.1.0  | 2026-10-06 | README.md adaptado, base do projeto apresentada.  |
+|  0.1.1  | 2026-10-07 | Adicionada interação entre clientes               |
 
 ## Sumário
 
 ## Visão Geral
 
 Aplicação baseada em Next.js e TypeScript usando Webhooks e frameworks do Deno para conectar usuários.
+
+## Features planejadas
+
+|Feature|Uso|Implementado?|Tempo Esperado para Implementação|
+|:-:|:-:|:-:|:-:|
+|Interação entre clientes|Permitir chat entre clientes, ao invés de permanecer entre o Cliente e o Servidor.|Não.|1 dia +-|
+|Grupos|Interação entre múltiplos clientes em uma conexão|Não.|3 dias +-|
+|Autenticação|Permitir guardar informações sobre clientes e suas conexões.|Não.|3 dias +-|
 
 ## Getting Started
 
