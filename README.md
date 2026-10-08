@@ -18,11 +18,50 @@ Aplicação baseada em Next.js e TypeScript usando Webhooks e frameworks do Deno
 
 ## Features planejadas
 
-|Feature|Uso|Implementado?|Tempo Esperado para Implementação|
-|:-:|:-:|:-:|:-:|
-|Interação entre clientes|Permitir chat entre clientes, ao invés de permanecer entre o Cliente e o Servidor.|Não.|1 dia +-|
-|Grupos|Interação entre múltiplos clientes em uma conexão|Não.|3 dias +-|
-|Autenticação|Permitir guardar informações sobre clientes e suas conexões.|Não.|3 dias +-|
+| Feature                  | Uso                                        | Implementado? | Tempo Esperado para Implementação |
+| ------------------------ | ------------------------------------------ | ------------- | --------------------------------- |
+| Interação entre clientes | Permitir chat entre clientes               | Sim.          | 1 dia +-                          |
+| Separação de conversas   | Separar conversas entre clientes           | Não           | 2 dias +-                         |
+| Indicador de recebido    | Comunicar se a mensagem foi recebida       | Não.          | 1 dia +-                          |
+| Grupos                   | Permitir chat entre múltiplos clientes     | Não.          | 3 dias +-                         |
+| Autenticação             | Identificar usuários e guardar informações | Não.          | 3 dias +-                         |
+
+## Stack Técnico
+
+| Tecnologia   | Versão | Uso                   |
+| ------------ | ------ | --------------------- |
+| Next.js      | 16.3   | Framework principal   |
+| TypeScript   | 5.9    | Tipagem estrita       |
+| Tailwind CSS | 4.3.3  | Estilização           |
+| Node WS      | 8.22.0 | Servidor de WebSocket |
+
+Scripts Disponíveis:
+
+```text
+deno run dev
+deno run lint
+deno run server
+```
+
+## Arquitetura
+
+O projeto segue *Feature-based Architecture*, focando em utilidades para o cliente ao invés de camadas técnicas.
+
+```text
+src/
+├── app/
+├── server/
+├── shared/
+│   ├── components/
+│   └── utils/
+└── features/
+    └── web-socket/
+         ├── api/
+         ├── components/
+         ├── hooks/
+         ├── types/
+         └── index.ts
+```
 
 ## Getting Started
 

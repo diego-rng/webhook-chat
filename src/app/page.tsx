@@ -9,6 +9,7 @@ export interface Messages {
   timeSent: Date;
   type?: string;
   target?: string | null;
+  seen?: boolean;
 }
 
 export default function Home() {
@@ -24,7 +25,7 @@ export default function Home() {
     null,
   );
   const [id] = useState(() => crypto.randomUUID());
-  const [messageTarget, setMessageTarget] = useState<Messages["target"]>(null)
+  const [messageTarget, setMessageTarget] = useState<Messages["target"]>(null);
 
   useEffect(() => {
     const ws = new WebSocket(`ws://localhost:${port}`);
@@ -97,7 +98,6 @@ export default function Home() {
         }
 
         if (payload.value) {
-          console.log("pong value:", payload.value);
           const users: string[] = JSON.parse(payload.value);
           setActiveUsers(users);
         }
@@ -106,6 +106,10 @@ export default function Home() {
       }
 
       if (payload.type === "message-confirmation") {
+        const index = messages.findIndex((a) => a.messageId === payload.messageId)
+        if (index) {
+          messages[index].seen = true
+        }
         console.log("Server received the message!");
         return;
       }
@@ -116,7 +120,7 @@ export default function Home() {
       ) => [...prev, {
         messageId: payload.messageId,
         value: payload.value,
-        origin: "Server",
+        origin: payload.origin,
         timeSent: new Date(),
       }]);
     };
@@ -166,9 +170,20 @@ export default function Home() {
             {ping === null ? "Server not connected" : "Connected"}
           </span>
 
-          <div>{activeUsers?.filter((u): u is string => !!u && u !== id).map((
-            u,
-          ) => <button type="button" onClick={() => setMessageTarget(u)} className="bg-gray-600 px-1 py-0.5" key={u}>{u.slice(0, 8)}</button>)}</div>
+          <div>
+            {activeUsers?.filter((u): u is string => !!u && u !== id).map((
+              u,
+            ) => (
+              <button
+                type="button"
+                onClick={() => setMessageTarget(u)}
+                className="bg-gray-600 px-1 py-0.5"
+                key={u}
+              >
+                {u.slice(0, 8)}
+              </button>
+            ))}
+          </div>
         </div>
         <div className="min-w-300 max-h-200 overflow-scroll transition-all gap-2 mb-4 min-h-30 flex flex-col">
           {messages.map((message, index) => {
@@ -177,7 +192,7 @@ export default function Home() {
                 {message.timeSent.toLocaleTimeString("pt-BR", {
                   hour: "2-digit",
                   minute: "2-digit",
-                })} [{message.origin}] {message.value}
+                })} [{message.origin}] {message.value} <span className="justify-self-end">{message.seen ? "Seen" : ''}</span>
               </span>
             );
           })}
