@@ -1,7 +1,7 @@
 import { SetStateAction } from "react";
 import { Messages } from "../types/Messages.ts";
 
-export function onClientOpen(ws: WebSocket, id: string, setMessages: (value: SetStateAction<Messages[]>) => void, sendHeartbeat: () => void, heartbeatInterval: NodeJS.Timeout | null) {
+export default function onClientOpen(ws: WebSocket, id: string, setMessages: (value: SetStateAction<Messages[]>) => void, sendHeartbeat: () => void, heartbeatInterval: NodeJS.Timeout | null) {
   console.log("[Client] Connected.");
   const identMessage: Messages = {
     messageId: crypto.randomUUID(),
