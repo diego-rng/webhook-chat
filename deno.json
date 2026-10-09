@@ -2,7 +2,8 @@
   "unstable": ["detect-cjs"],
   "imports": {
     "@types/ws": "npm:@types/ws@^8.18.2",
-    "ws": "npm:ws@^8.22.0"
+    "ws": "npm:ws@^8.22.0",
+    "@features/*": ["./src/features/*"]
   },
   "allowScripts": ["npm:unrs-resolver@1.12.2"]
 }

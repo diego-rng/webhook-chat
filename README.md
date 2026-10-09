@@ -6,11 +6,17 @@ Aplicação de chat usando Webhooks para conectar clientes e usando Frameworks d
 ## Histórico de Versões
 
 | Version |    Date    |                   What Changed                    |
-| :-----: | :--------: | :-----------------------------------------------: |
+| :-----: | :--------: | ------------------------------------------------- |
 |  0.1.0  | 2026-10-06 | README.md adaptado, base do projeto apresentada.  |
 |  0.1.1  | 2026-10-07 | Adicionada interação entre clientes               |
+|  0.1.2  | 2026-19-09 | Alterada a arquitetura do projeto                 |
 
 ## Sumário
+
+- [Visão Geral](#visão-geral)
+- [Features Planejadas](#features-planejadas)
+- [Stack Técnico](#stack-técnico)
+- [Arquitetura](#arquitetura)
 
 ## Visão Geral
 
@@ -28,12 +34,14 @@ Aplicação baseada em Next.js e TypeScript usando Webhooks e frameworks do Deno
 
 ## Stack Técnico
 
-| Tecnologia   | Versão | Uso                   |
-| ------------ | ------ | --------------------- |
-| Next.js      | 16.3   | Framework principal   |
-| TypeScript   | 5.9    | Tipagem estrita       |
-| Tailwind CSS | 4.3.3  | Estilização           |
-| Node WS      | 8.22.0 | Servidor de WebSocket |
+| Tecnologia   | Versão  | Uso                   |
+| ------------ | ------- | --------------------- |
+| Node.js      | 24.20.0 | Runtime JS            |
+| Deno         | 2.9.7   | Runtime TS            |
+| Next.js      | 16.3    | Framework principal   |
+| TypeScript   | 5.9     | Tipagem estrita       |
+| Tailwind CSS | 4.3.3   | Estilização           |
+| Node WS      | 8.22.0  | Servidor de WebSocket |
 
 Scripts Disponíveis:
 
@@ -89,25 +97,3 @@ This project uses
 [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts)
 to automatically optimize and load [Geist](https://vercel.com/font), a new font
 family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js
-  features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out
-[the Next.js GitHub repository](https://github.com/vercel/next.js) - your
-feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the
-[Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme)
-from the creators of Next.js.
-
-Check out our
-[Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying)
-for more details.

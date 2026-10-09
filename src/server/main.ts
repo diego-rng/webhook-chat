@@ -1,10 +1,6 @@
 import WebSocket, { WebSocketServer } from "ws";
-import { Messages } from "../app/page.tsx";
-
-export interface ExtWebSocket extends WebSocket {
-  isAlive: boolean;
-  userId: string;
-}
+import { Messages } from "../features/web-socket/types/Messages.ts";
+import { ExtWebSocket } from "../features/web-socket/types/ExtWebSocket.ts";
 
 const port = 8080;
 const wss = new WebSocketServer({ port });
@@ -45,6 +41,7 @@ wss.on("connection", (ws: ExtWebSocket) => {
       type: "message-confirmation",
       userId: message.userId,
       timeSent: new Date(),
+      seen: true,
       origin: "Server",
       messageId: message.messageId,
     };

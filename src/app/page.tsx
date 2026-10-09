@@ -1,16 +1,9 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-
-export interface Messages {
-  value?: string;
-  origin: "Client" | "Server";
-  userId?: string;
-  messageId: string;
-  timeSent: Date;
-  type?: string;
-  target?: string | null;
-  seen?: boolean;
-}
+import { Messages } from "@features/web-socket/types/Messages.ts";
+import { onClientOpen } from "../features/web-socket/components/client-open.ts";
+import onClientMessage from "../features/web-socket/components/client-message.ts";
+import sendMessage from "../features/web-socket/components/client-send.ts";
 
 export default function Home() {
   const port = 8080;
@@ -55,75 +48,9 @@ export default function Home() {
       }, 3000);
     }
     wsRef.current = ws;
-    ws.onopen = () => {
-      console.log("[Client] Connected.");
-      const identMessage: Messages = {
-        messageId: crypto.randomUUID(),
-        type: "identification-msg",
-        userId: id,
-        origin: "Client",
-        timeSent: new Date(),
-      };
-      ws.send(JSON.stringify(identMessage));
-      const openMessage: Messages = {
-        type: "opening-message",
-        messageId: crypto.randomUUID(),
-        value: `Attempting Connection`,
-        userId: id,
-        origin: "Client",
-        timeSent: new Date(),
-      };
-      ws.send(JSON.stringify(openMessage));
-      setMessages((
-        prev,
-      ) => [...prev, openMessage]);
-      sendHeartbeat();
-      heartbeatInterval = setInterval(sendHeartbeat, 5000);
-    };
+    ws.onopen = () => onClientOpen(ws, id, setMessages, sendHeartbeat, heartbeatTimeout)
 
-    ws.onmessage = (event) => {
-      const payload: Messages = JSON.parse(String(event.data));
-
-      if (payload?.type === "latency-pong") {
-        const pending = pendingPingRef.current;
-
-        if (pending?.userId === payload.userId) {
-          setPing(Math.round(performance.now() - pending!.startedAt));
-          pendingPingRef.current = null;
-
-          if (heartbeatTimeout !== null) {
-            clearTimeout(heartbeatTimeout);
-            heartbeatTimeout = null;
-          }
-        }
-
-        if (payload.value) {
-          const users: string[] = JSON.parse(payload.value);
-          setActiveUsers(users);
-        }
-
-        return;
-      }
-
-      if (payload.type === "message-confirmation") {
-        const index = messages.findIndex((a) => a.messageId === payload.messageId)
-        if (index) {
-          messages[index].seen = true
-        }
-        console.log("Server received the message!");
-        return;
-      }
-
-      console.log(`Received a message from the server: ${event.data}`);
-      setMessages((
-        prev,
-      ) => [...prev, {
-        messageId: payload.messageId,
-        value: payload.value,
-        origin: payload.origin,
-        timeSent: new Date(),
-      }]);
-    };
+    ws.onmessage = (event) => onClientMessage(event, pendingPingRef, setPing, heartbeatTimeout, setActiveUsers, setMessages)
 
     ws.onclose = () => {
       setPing(null);
@@ -143,24 +70,6 @@ export default function Home() {
       ws.close();
     };
   }, []);
-
-  function sendMessage(message: string) {
-    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-      const sentMessage: Messages = {
-        userId: id,
-        messageId: crypto.randomUUID(),
-        value: message,
-        origin: "Client",
-        timeSent: new Date(),
-        type: "user-message",
-        target: messageTarget,
-      };
-      wsRef.current.send(JSON.stringify(sentMessage));
-      setMessages((
-        prev,
-      ) => [...prev, sentMessage]);
-    }
-  }
 
   return (
     <div className="flex justify-center items-center h-screen transition-all">
@@ -188,11 +97,11 @@ export default function Home() {
         <div className="min-w-300 max-h-200 overflow-scroll transition-all gap-2 mb-4 min-h-30 flex flex-col">
           {messages.map((message, index) => {
             return (
-              <span key={index}>
+              <span key={index} className="flex">
                 {message.timeSent.toLocaleTimeString("pt-BR", {
                   hour: "2-digit",
                   minute: "2-digit",
-                })} [{message.origin}] {message.value} <span className="justify-self-end">{message.seen ? "Seen" : ''}</span>
+                })} [{message.origin}] {message.value} <span className="justify-self-end ml-4 text-gray-500">{message.seen ? "Seen" : ''}</span>
               </span>
             );
           })}
@@ -208,7 +117,7 @@ export default function Home() {
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey && area.trim().length >= 1) {
                 e.preventDefault();
-                sendMessage(area);
+                sendMessage(area, wsRef, id, messageTarget, setMessages);
                 setArea("");
               }
             }}
