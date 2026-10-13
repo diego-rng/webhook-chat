@@ -1,0 +1,26 @@
+{
+  "name": "db",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "deno check src/index.ts",
+    "contract:emit": "deno run -A npm:prisma@8.0.0-rc.21 contract emit",
+    "db:init": "deno run -A --env-file=.env npm:prisma@8.0.0-rc.21 db init",
+    "db:update": "deno run -A --env-file=.env npm:prisma@8.0.0-rc.21 db update",
+    "db:verify": "deno run -A --env-file=.env npm:prisma@8.0.0-rc.21 db verify",
+    "dev": "deno run -A --env-file=.env --watch src/index.ts",
+    "migrate": "deno run -A --env-file=.env npm:prisma@8.0.0-rc.21 db migrate",
+    "migration:plan": "deno run -A --env-file=.env npm:prisma@8.0.0-rc.21 migration plan",
+    "migration:show": "deno run -A --env-file=.env npm:prisma@8.0.0-rc.21 migration show",
+    "migration:status": "deno run -A --env-file=.env npm:prisma@8.0.0-rc.21 migration status",
+    "start": "deno run -A --env-file=.env src/index.ts"
+  },
+  "dependencies": {
+    "@prisma/orm-postgres": "8.0.0-rc.16",
+    "dotenv": "^18.0.6"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.4",
+    "prisma": "8.0.0-rc.21"
+  }
+}
