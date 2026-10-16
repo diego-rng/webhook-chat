@@ -1,9 +1,9 @@
 import { connectDatabase, db } from "./db.ts";
 
 const users = [
-  { email: "alice@prisma.io", username: "alice", name: "Alice" },
-  { email: "bob@prisma.io", username: "bob", name: "Bob" },
-  { email: "carol@prisma.io", username: "carol", name: "Carol" },
+  { email: "admin@test.net", username: "admin", name: "Admin", active: true },
+  { email: "bob@prisma.io", username: "bob", name: "Bob", active: true },
+  { email: "carol@prisma.io", username: "carol", name: "Carol", active: true },
 ];
 
 let pendingSeed: Promise<void> | undefined;

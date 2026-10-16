@@ -1,11 +1,11 @@
 'use client'
-import { use, useContext, useRef, useState } from 'react'
+import { use, useRef, useState } from 'react'
 import { Messages } from "../../../features/web-socket/types/Messages.ts";
 import sendMessage from "../../../features/web-socket/components/client-send.ts";
-import { id } from "../../page.tsx";
 import useClientConnection from "../../../features/web-socket/api/client-connection.ts";
+import { useUserContext } from '@/features/web-socket/hooks/userContext.tsx';
 
-export default function chatPage({params}: {params: Promise<{ userId: string }>}) {
+export default function ChatPage({params}: {params: Promise<{ userId: string }>}) {
   const { userId } = use(params);
   const port = 8080
   const [messages, setMessages] = useState<Messages[]>([]);
@@ -13,13 +13,13 @@ export default function chatPage({params}: {params: Promise<{ userId: string }>}
   const [ping, setPing] = useState<number | null>(null)
   const [area, setArea] = useState<string>("");
   const wsRef = useRef<WebSocket | null>(null);
-  const clientId = useContext(id)
+  const user = useUserContext()
   const pendingPingRef = useRef<{userId: string, startedAt: number} | null>(null)
   
   useClientConnection(
     port, 
     pendingPingRef,
-    clientId,
+    user.userId,
     setPing, 
     wsRef,
     setMessages,
@@ -35,7 +35,7 @@ export default function chatPage({params}: {params: Promise<{ userId: string }>}
           </span>
 
           <div>
-            {activeUsers?.filter((u): u is string => !!u && u !== clientId).map((
+            {activeUsers?.filter((u): u is string => !!u && u !== user.userId).map((
               u,
             ) => (
               <button
@@ -72,7 +72,7 @@ export default function chatPage({params}: {params: Promise<{ userId: string }>}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey && area.trim().length >= 1) {
                 e.preventDefault();
-                sendMessage(area, wsRef, clientId, userId, setMessages);
+                sendMessage(area, wsRef, user.userId, userId, setMessages);
                 setArea("");
               }
             }}
@@ -85,7 +85,7 @@ export default function chatPage({params}: {params: Promise<{ userId: string }>}
           <div className="flex flex-col">
             <span>Active Users:</span>
             <div className="flex  gap-2">
-              {activeUsers?.filter((u): u is string => !!u && u !== clientId).map((
+              {activeUsers?.filter((u): u is string => !!u && u !== user.userId).map((
                 u,
               ) => <span key={u}>{u.slice(0, 8)}</span>)}
             </div>

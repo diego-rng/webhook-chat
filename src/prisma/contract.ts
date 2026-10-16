@@ -3,7 +3,7 @@ import { defineContract } from '@prisma/orm-postgres/contract-builder';
 export const contract = defineContract({}, ({ field, model, rel }) => {
   const User = model('User', {
     fields: {
-      id: field.id.uuidv7String(),
+      id: field.id.uuidv4String(),
       username: field.text().optional(),
       name: field.text().optional(),
       active: field.boolean(),
@@ -15,7 +15,7 @@ export const contract = defineContract({}, ({ field, model, rel }) => {
 
   const Conversation = model('Conversation', {
     fields: {
-      id: field.id.uuidv7String(),
+      id: field.id.uuidv4String(),
       created_by: field.text(),
       conversation_name: field.text().optional()
     }
@@ -23,7 +23,7 @@ export const contract = defineContract({}, ({ field, model, rel }) => {
 
   const Message = model('Message', {
     fields: {
-      id: field.id.uuidv7String(),
+      id: field.id.uuidv4String(),
       sent_by: field.text(),
       conversation_id: field.text(),
       content: field.text(),
@@ -33,7 +33,7 @@ export const contract = defineContract({}, ({ field, model, rel }) => {
 
   const ConversationParticipant = model("ConversationParticipant", {
     fields: {
-      id: field.id.uuidv7String(),
+      id: field.id.uuidv4String(),
       user_id: field.text(),
       conversation_id: field.text()
     },
