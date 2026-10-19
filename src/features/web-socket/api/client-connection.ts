@@ -1,5 +1,5 @@
 import { RefObject, SetStateAction, useEffect } from "react";
-import { Messages } from "../types/Messages.ts";
+import Messages from "../types/Messages.ts";
 import onClientMessage from "../components/client-message.ts";
 import onClientOpen from "../components/client-open.ts";
 
@@ -14,7 +14,7 @@ export default function useClientConnection(
 ) {
   useEffect(() => {
     const ws = new WebSocket(`ws://localhost:${port}`);
-    let heartbeatInterval: ReturnType<typeof setInterval> | null = null;
+    const heartbeatInterval: ReturnType<typeof setInterval> | null = null;
     let heartbeatTimeout: ReturnType<typeof setTimeout> | null = null;
 
     function sendHeartbeat() {

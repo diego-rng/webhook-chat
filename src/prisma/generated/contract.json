@@ -19,6 +19,10 @@
     "User": {
       "model": "User",
       "namespace": "public"
+    },
+    "UserCredentials": {
+      "model": "UserCredentials",
+      "namespace": "public"
     }
   },
   "domain": {
@@ -419,6 +423,64 @@
               "namespaceId": "public",
               "table": "User"
             }
+          },
+          "UserCredentials": {
+            "fields": {
+              "password": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "user_id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "username": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "author": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "user_id"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "password": {
+                  "column": "password"
+                },
+                "user_id": {
+                  "column": "user_id"
+                },
+                "username": {
+                  "column": "username"
+                }
+              },
+              "namespaceId": "public",
+              "table": "UserCredentials"
+            }
           }
         }
       }
@@ -584,6 +646,28 @@
                   ]
                 }
               ]
+            },
+            "UserCredentials": {
+              "columns": {
+                "password": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "user_id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "username": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "uniques": []
             }
           }
         },
@@ -591,15 +675,15 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "4942b3758cb6afa87dc31effe491d34712b8f5e39515a77bc9ed85df3f474d39"
+    "storageHash": "c0d2ffd7784c9b313ef91e0329e973da6782859263946b375d253db6e7bf9c77"
   },
   "execution": {
-    "executionHash": "d475e5239557779712a3900b383a0deee0de2b044153f1a6d77b7a17c5b11361",
+    "executionHash": "4d51860a6f068412b03ac988d13cd5791e010dac1469a790e1d37a30c6bdc8dd",
     "mutations": {
       "defaults": [
         {
           "onCreate": {
-            "id": "uuidv7",
+            "id": "uuidv4",
             "kind": "generator"
           },
           "ref": {
@@ -610,7 +694,7 @@
         },
         {
           "onCreate": {
-            "id": "uuidv7",
+            "id": "uuidv4",
             "kind": "generator"
           },
           "ref": {
@@ -621,7 +705,7 @@
         },
         {
           "onCreate": {
-            "id": "uuidv7",
+            "id": "uuidv4",
             "kind": "generator"
           },
           "ref": {
@@ -643,7 +727,7 @@
         },
         {
           "onCreate": {
-            "id": "uuidv7",
+            "id": "uuidv4",
             "kind": "generator"
           },
           "ref": {
