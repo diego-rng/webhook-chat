@@ -21,6 +21,7 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
+      "@/features/*": ["./src/features/*"],
       "@prisma/*": ["./src/prisma/*"]
     },
     "types": [

@@ -1,6 +1,6 @@
 'use client'
 import { use, useRef, useState } from 'react'
-import { Messages } from "../../../features/web-socket/types/Messages.ts";
+import Messages from "../../../features/web-socket/types/Messages.ts";
 import sendMessage from "../../../features/web-socket/components/client-send.ts";
 import useClientConnection from "../../../features/web-socket/api/client-connection.ts";
 import { useUserContext } from '@/features/web-socket/hooks/userContext.tsx';

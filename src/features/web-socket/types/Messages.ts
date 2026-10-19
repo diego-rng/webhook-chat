@@ -1,4 +1,4 @@
-export interface Messages {
+export default interface Messages {
   value?: string;
   origin: "Client" | "Server";
   userId?: string;

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/app/globals.css";
-import { UserContextProvider } from "../features/web-socket/hooks/userContext.tsx";
+import { UserContextProvider } from "@/features/web-socket/hooks/userContext.tsx";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

@@ -1,13 +1,14 @@
 "use client";
-import { Messages } from "@features/web-socket/types/Messages.ts";
-import useClientConnection from "../features/web-socket/api/client-connection.ts";
-import { useUserContext } from "../features/web-socket/hooks/userContext.tsx"
+import Messages from "@/features/web-socket/types/Messages.ts";
+import useClientConnection from "@/features/web-socket/api/client-connection.ts";
+import { useUserContext } from "@/features/web-socket/hooks/userContext.tsx"
 
 import { createContext, useContext, useRef, useState } from "react";
 import Link from "next/link";
 
 export default function Home() {
   const port = 8080;
+  const user = useUserContext()
   const [messages, setMessages] = useState<Messages[]>([]);
   const [ping, setPing] = useState<number | null>(null);
   const pendingPingRef = useRef<{ userId: string; startedAt: number } | null>(
@@ -23,7 +24,7 @@ export default function Home() {
   useClientConnection(
     port,
     pendingPingRef,
-    useUserContext().userId,
+    user.userId,
     setPing,
     wsRef,
     setMessages,
@@ -33,7 +34,7 @@ export default function Home() {
   return (
     <div className="flex justify-center items-center h-screen transition-all">
       <div className="transition-all flex flex-col p-2 bg-gray-900">
-        {activeUsers?.filter((u): u is string => !!u && u !== useContext(id))
+        {activeUsers?.filter((u): u is string => !!u && u !== user.userId)
           .map((u) => <Link href={`${u}/chat`} key={u}>{u}</Link>)}
       </div>
     </div>
