@@ -1,21 +1,23 @@
-import WebSocket, { WebSocketServer } from "ws";
-import { Messages } from "../features/web-socket/types/Messages.ts";
-import { ExtWebSocket } from "../features/web-socket/types/ExtWebSocket.ts";
+import WebSocket, { WebSocketServer } from 'ws';
+import { Messages } from '../types/Messages.ts';
+import { ExtWebSocket } from '../types/ExtWebSocket.ts';
 
 const port = 8080;
 const wss = new WebSocketServer({ port });
 
-wss.on("connection", (ws: ExtWebSocket) => {
+wss.on('connection', (ws: ExtWebSocket) => {
   ws.isAlive = true;
-  ws.on("message", (data) => {
+  ws.on('message', (data) => {
     const message: Messages = JSON.parse(data.toString());
 
-    if (message.type === "latency-ping" && message.userId) {
-      const userIds = [...wss.clients].map((c) => (c as ExtWebSocket).userId).filter(Boolean);
+    if (message.type === 'latency-ping' && message.userId) {
+      const userIds = [...wss.clients]
+        .map((c) => (c as ExtWebSocket).userId)
+        .filter(Boolean);
       const response: Messages = {
-        type: "latency-pong",
+        type: 'latency-pong',
         userId: message.userId,
-        origin: "Server",
+        origin: 'Server',
         timeSent: new Date(),
         messageId: message.messageId,
         value: JSON.stringify(userIds),
@@ -23,7 +25,7 @@ wss.on("connection", (ws: ExtWebSocket) => {
       ws.send(JSON.stringify(response));
       return;
     }
-    if (message.type === "identification-msg" && message.userId) {
+    if (message.type === 'identification-msg' && message.userId) {
       ws.userId = message.userId;
       return;
     }
@@ -34,30 +36,30 @@ wss.on("connection", (ws: ExtWebSocket) => {
       (c) => (c as ExtWebSocket).userId === message.target,
     );
     if (target && target.readyState === WebSocket.OPEN) {
-      target.send(JSON.stringify(message))
+      target.send(JSON.stringify(message));
     }
 
     const confirmation: Messages = {
-      type: "message-confirmation",
+      type: 'message-confirmation',
       userId: message.userId,
       timeSent: new Date(),
       seen: true,
-      origin: "Server",
+      origin: 'Server',
       messageId: message.messageId,
     };
     ws.send(JSON.stringify(confirmation));
   });
 
-  ws.on("pong", () => {
+  ws.on('pong', () => {
     ws.isAlive = true;
   });
 
   const startMessage: Messages = {
-    type: "start-message",
-    userId: "0000",
+    type: 'start-message',
+    userId: '0000',
     value: `Connected.`,
     messageId: crypto.randomUUID(),
-    origin: "Server",
+    origin: 'Server',
     timeSent: new Date(),
   };
   ws.send(JSON.stringify(startMessage));
@@ -67,16 +69,16 @@ const interval = setInterval(() => {
   wss.clients.forEach((client) => {
     const ws = client as ExtWebSocket;
     if (ws.isAlive === false) {
-      console.log("Client unresponsive. Terminating");
+      console.log('Client unresponsive. Terminating');
       return ws.terminate();
     }
 
     ws.isAlive = false;
-    ws.ping("ping");
+    ws.ping('ping');
   });
 }, 30000);
 
-wss.on("close", () => {
+wss.on('close', () => {
   clearInterval(interval);
 });
 

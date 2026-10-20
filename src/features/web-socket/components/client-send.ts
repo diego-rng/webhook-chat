@@ -1,5 +1,5 @@
-import { Messages } from "../types/Messages.ts";
-import { RefObject, SetStateAction } from "react";
+import { Messages } from '../../../types/Messages.ts';
+import { RefObject, SetStateAction } from 'react';
 
 export default function sendMessage(
   message: string,
@@ -13,14 +13,12 @@ export default function sendMessage(
       userId: id,
       messageId: crypto.randomUUID(),
       value: message,
-      origin: "Client",
+      origin: 'Client',
       timeSent: new Date(),
-      type: "user-message",
+      type: 'user-message',
       target: messageTarget,
     };
     wsRef.current.send(JSON.stringify(sentMessage));
-    setMessages((
-      prev,
-    ) => [...prev, sentMessage]);
+    setMessages((prev) => [...prev, sentMessage]);
   }
 }

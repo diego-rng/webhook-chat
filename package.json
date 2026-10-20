@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "server": "deno run --watch --allow-env --allow-net src/server/main.ts",
-    "contract:emit": "prisma contract emit"
+    "contract:emit": "prisma contract emit --output-path './src/prisma/generated/'"
   },
   "dependencies": {
     "@prisma/orm-postgres": "8.0.0-rc.18",

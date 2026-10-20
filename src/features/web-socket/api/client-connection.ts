@@ -1,16 +1,18 @@
-import { RefObject, SetStateAction, useEffect } from "react";
-import Messages from "../types/Messages.ts";
-import onClientMessage from "../components/client-message.ts";
-import onClientOpen from "../components/client-open.ts";
+import { RefObject, SetStateAction, useEffect } from 'react';
+import Messages from '../../../types/Messages.ts';
+import onClientMessage from '../components/client-message.ts';
+import onClientOpen from '../components/client-open.ts';
 
 export default function useClientConnection(
   port: number,
-  pendingPingRef: RefObject<{userId: string, startedAt: number} | null>,
+  pendingPingRef: RefObject<{ userId: string; startedAt: number } | null>,
   id: string,
   setPing: (value: SetStateAction<number | null>) => void,
   wsRef: RefObject<WebSocket | null>,
   setMessages: (value: SetStateAction<Messages[]>) => void,
-  setActiveUsers: (value: SetStateAction<(string | undefined)[] | null>) => void,
+  setActiveUsers: (
+    value: SetStateAction<(string | undefined)[] | null>,
+  ) => void,
 ) {
   useEffect(() => {
     const ws = new WebSocket(`ws://localhost:${port}`);
@@ -24,10 +26,10 @@ export default function useClientConnection(
 
       const heartbeatMessage: Messages = {
         messageId: crypto.randomUUID(),
-        type: "latency-ping",
+        type: 'latency-ping',
         userId: id,
         timeSent: new Date(),
-        origin: "Client",
+        origin: 'Client',
       };
       pendingPingRef.current = { userId: id, startedAt: performance.now() };
       ws.send(JSON.stringify(heartbeatMessage));
@@ -58,7 +60,7 @@ export default function useClientConnection(
       pendingPingRef.current = null;
       if (heartbeatInterval !== null) clearInterval(heartbeatInterval);
       if (heartbeatTimeout !== null) clearTimeout(heartbeatTimeout);
-      console.log("WebSocket disconnected");
+      console.log('WebSocket disconnected');
     };
     ws.onerror = (error) => console.error(`${error}`);
 

@@ -1,10 +1,15 @@
+import bcrypt from "bcryptjs";
 import { connectDatabase, db } from "./db.ts";
 
 const users = [
-  { email: "admin@test.net", username: "admin", name: "Admin", active: true },
+  { user_id: '1', email: "admin@test.net", username: "admin", name: "Admin", active: true },
   { email: "bob@prisma.io", username: "bob", name: "Bob", active: true },
   { email: "carol@prisma.io", username: "carol", name: "Carol", active: true },
 ];
+
+const userCredentials = [
+  {username: 'admin', user_id: '1', password: bcrypt.hashSync('password')}
+]
 
 let pendingSeed: Promise<void> | undefined;
 
@@ -17,6 +22,13 @@ async function runSeed(): Promise<void> {
       update: {},
       conflictOn: { email: user.email },
     });
+  }
+
+  for (const cred of userCredentials) {
+    await db.orm.public.UserCredentials.upsert({
+      create: cred,
+      update: {}
+    })
   }
 }
 

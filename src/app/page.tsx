@@ -1,42 +1,24 @@
-"use client";
-import Messages from "@/features/web-socket/types/Messages.ts";
-import useClientConnection from "@/features/web-socket/api/client-connection.ts";
-import { useUserContext } from "@/features/web-socket/hooks/userContext.tsx"
+import { db } from '@/prisma/db';
+import { SessionProvider } from 'next-auth/react';
+import HomePage from '@/features/components/home';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { redirect } from 'next/navigation';
 
-import { createContext, useContext, useRef, useState } from "react";
-import Link from "next/link";
+export default async function Home() {
+  const session = await getServerSession(authOptions);
 
-export default function Home() {
-  const port = 8080;
-  const user = useUserContext()
-  const [messages, setMessages] = useState<Messages[]>([]);
-  const [ping, setPing] = useState<number | null>(null);
-  const pendingPingRef = useRef<{ userId: string; startedAt: number } | null>(
-    null,
-  );
-  const [area, setArea] = useState<string>("");
-  const wsRef = useRef<WebSocket | null>(null);
-  const [activeUsers, setActiveUsers] = useState<Messages["userId"][] | null>(
-    null,
-  );
-  const [messageTarget, setMessageTarget] = useState<Messages["target"]>(null);
+  if (!session?.user?.username) {
+    redirect('/login');
+  }
 
-  useClientConnection(
-    port,
-    pendingPingRef,
-    user.userId,
-    setPing,
-    wsRef,
-    setMessages,
-    setActiveUsers,
-  );
+  const user = await db.orm.public.UserCredentials.where({
+    username: session.user.username,
+  }).first();
 
   return (
-    <div className="flex justify-center items-center h-screen transition-all">
-      <div className="transition-all flex flex-col p-2 bg-gray-900">
-        {activeUsers?.filter((u): u is string => !!u && u !== user.userId)
-          .map((u) => <Link href={`${u}/chat`} key={u}>{u}</Link>)}
-      </div>
-    </div>
+    <SessionProvider session={session}>
+      <HomePage user={user ?? null} />
+    </SessionProvider>
   );
 }
