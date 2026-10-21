@@ -1,5 +1,5 @@
 import { SetStateAction } from 'react';
-import { Messages } from '../../../types/Messages.ts';
+import Messages from '../../../types/Messages.ts';
 
 export default function onClientOpen(
   ws: WebSocket,

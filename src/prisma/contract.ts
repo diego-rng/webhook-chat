@@ -41,8 +41,9 @@ export const contract = defineContract({}, ({ field, model, rel }) => {
 
   const UserCredentials = model('UserCredentials', {
     fields: {
+      id: field.id.uuidv4String(),
       user_id: field.text(),
-      username: field.text(),
+      username: field.text().unique(),
       password: field.text(),
     },
   });

@@ -1,5 +1,5 @@
 import { RefObject, SetStateAction } from 'react';
-import { Messages } from '../../../types/Messages.ts';
+import Messages from '../../../types/Messages.ts';
 
 export default function onClientMessage(
   event: MessageEvent,

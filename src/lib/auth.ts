@@ -14,21 +14,31 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        if (!credentials) return null;
-        const user = await db.orm.public.UserCredentials.where({
-          username: credentials?.username,
-        }).first();
+        console.log(`authorize called! ${credentials?.username}`)
+        try {
+          if (!credentials) return null;
+          const user = await db.orm.public.UserCredentials.where({
+            username: credentials?.username,
+          }).first();
+          
+          console.log(`user found! ${!!user}`)
+          
+          if (!user) return null;
+  
 
-        if (!user) return null;
+          const ok = await bcrypt.compare(credentials.password, user.password);
+          if (!ok) return null;
+  
+          return {
+            id: String(user.user_id),
+            user_id: String(user.user_id),
+            username: user.username,
+          };
 
-        const ok = await bcrypt.compare(credentials.password, user.password);
-        if (!ok) return null;
-
-        return {
-          id: String(user.user_id),
-          user_id: String(user.user_id),
-          username: user.username,
-        };
+        } catch (e) {
+          console.error(`authorize error: ${e}`)
+          return null;
+        }
       },
     }),
   ],

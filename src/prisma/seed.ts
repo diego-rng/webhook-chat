@@ -1,15 +1,18 @@
 import bcrypt from "bcryptjs";
 import { connectDatabase, db } from "./db.ts";
+import { Char } from "@prisma/orm-postgres/target/codec-types";
+
+const ADMIN_ID = "00000000-0000-4000-8000-000000000001" as Char<36>;
 
 const users = [
-  { user_id: '1', email: "admin@test.net", username: "admin", name: "Admin", active: true },
+  { id: ADMIN_ID, email: "admin@test.net", username: "admin", name: "Admin", active: true },
   { email: "bob@prisma.io", username: "bob", name: "Bob", active: true },
   { email: "carol@prisma.io", username: "carol", name: "Carol", active: true },
 ];
 
 const userCredentials = [
-  {username: 'admin', user_id: '1', password: bcrypt.hashSync('password')}
-]
+  { username: "admin", user_id: ADMIN_ID, password: bcrypt.hashSync("password", 10) },
+];
 
 let pendingSeed: Promise<void> | undefined;
 
@@ -27,8 +30,9 @@ async function runSeed(): Promise<void> {
   for (const cred of userCredentials) {
     await db.orm.public.UserCredentials.upsert({
       create: cred,
-      update: {}
-    })
+      update: {},
+      conflictOn: { username: cred.username },
+    });
   }
 }
 
@@ -38,4 +42,9 @@ export function seed(): Promise<void> {
     throw error;
   });
   return pendingSeed;
+}
+
+if (import.meta.main) {
+  await seed();
+  await db.close();
 }

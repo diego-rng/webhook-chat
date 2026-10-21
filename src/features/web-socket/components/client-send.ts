@@ -1,4 +1,4 @@
-import { Messages } from '../../../types/Messages.ts';
+import Messages from '../../../types/Messages.ts';
 import { RefObject, SetStateAction } from 'react';
 
 export default function sendMessage(

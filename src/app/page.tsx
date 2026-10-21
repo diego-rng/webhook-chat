@@ -1,9 +1,11 @@
-import { db } from '@/prisma/db';
-import { SessionProvider } from 'next-auth/react';
-import HomePage from '@/features/components/home';
+import { db } from '@/prisma/db.ts';
+import Providers from '@features/components/providers.tsx';
+import HomePage from '@features/components/home.tsx';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { authOptions } from '@/lib/auth.ts';
 import { redirect } from 'next/navigation';
+import User from '@/types/User.ts';
+import type { Char } from '@prisma/orm-postgres/target/codec-types';
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
@@ -12,13 +14,31 @@ export default async function Home() {
     redirect('/login');
   }
 
-  const user = await db.orm.public.UserCredentials.where({
+  const userTemp = await db.orm.public.UserCredentials.where({
     username: session.user.username,
   }).first();
 
+  if (!userTemp) redirect('/login');
+
+  const userInfo = await db.orm.public.User.where({
+    id: userTemp.user_id as Char<36>,
+  }).first();
+
+  if (!userInfo) redirect('/login')
+
+  const user: User = {
+    userId: userTemp.user_id,
+    username: userTemp.username,
+    name: userInfo.name!,
+    active: userInfo.active,
+    createdAt: new Date(userInfo.createdAt),
+    updatedAt: new Date(userInfo.updatedAt),
+    email: userInfo.email,
+  };
+
   return (
-    <SessionProvider session={session}>
+    <Providers session={session}>
       <HomePage user={user ?? null} />
-    </SessionProvider>
+    </Providers>
   );
 }

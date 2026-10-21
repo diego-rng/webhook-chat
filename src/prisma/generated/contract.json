@@ -426,6 +426,16 @@
           },
           "UserCredentials": {
             "fields": {
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "sql/char@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 36
+                  }
+                }
+              },
               "password": {
                 "nullable": false,
                 "type": {
@@ -468,6 +478,9 @@
             },
             "storage": {
               "fields": {
+                "id": {
+                  "column": "id"
+                },
                 "password": {
                   "column": "password"
                 },
@@ -649,6 +662,14 @@
             },
             "UserCredentials": {
               "columns": {
+                "id": {
+                  "codecId": "sql/char@1",
+                  "dataType": "pg/char",
+                  "nullable": false,
+                  "typeParams": {
+                    "length": 36
+                  }
+                },
                 "password": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
@@ -667,7 +688,18 @@
               },
               "foreignKeys": [],
               "indexes": [],
-              "uniques": []
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "username"
+                  ]
+                }
+              ]
             }
           }
         },
@@ -675,10 +707,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "c0d2ffd7784c9b313ef91e0329e973da6782859263946b375d253db6e7bf9c77"
+    "storageHash": "5f813b0854a5562d806d7ab25f9b4408e4929b60c610a5ccdc319c2e6cd2b12e"
   },
   "execution": {
-    "executionHash": "4d51860a6f068412b03ac988d13cd5791e010dac1469a790e1d37a30c6bdc8dd",
+    "executionHash": "87cd33d33e62449f8b7a2543e05a354cb8b2f43e5366c91c380d5865fb28aff4",
     "mutations": {
       "defaults": [
         {
@@ -748,6 +780,17 @@
           "ref": {
             "entry": "User",
             "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "UserCredentials",
+            "field": "id",
             "namespace": "public"
           }
         }
