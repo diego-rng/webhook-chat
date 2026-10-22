@@ -1,7 +1,7 @@
-import ChatPage from "@/features/components/chat";
-import { authOptions } from "@/lib/auth";
-import { db } from "@/prisma/db";
-import User from "@/types/User";
+import ChatPage from "@/features/components/chat.tsx";
+import { authOptions } from "@/lib/auth.ts";
+import { db } from "@/prisma/db.ts";
+import User from "@/types/User.ts";
 import { Char } from "@prisma/orm-postgres/target/codec-types";
 import { getServerSession } from "next-auth";
 import { SessionProvider } from "next-auth/react";

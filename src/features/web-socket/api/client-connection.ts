@@ -72,5 +72,5 @@ export default function useClientConnection(
       pendingPingRef.current = null;
       ws.close();
     };
-  }, []);
+  }, [id, pendingPingRef, port, setActiveUsers, setMessages, setPing, wsRef]);
 }

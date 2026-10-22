@@ -93,7 +93,7 @@ export default function SignUpPage({ handleSignUp }: SignUpProps) {
             />
           </label>
           <label className="flex flex-col gap-2 mt-2">
-            Name
+            <span>Name <span className="inline text-xs text-gray-500">(optional)</span></span>
             <input
               type="text"
               className="bg-black"

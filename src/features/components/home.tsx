@@ -1,11 +1,11 @@
 'use client';
-import { useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
-import Messages from '../../types/Messages';
+import Messages from '../../types/Messages.ts';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import useClientConnection from '../web-socket/api/client-connection';
-import type User from '@/types/User';
+import useClientConnection from '../web-socket/api/client-connection.ts';
+import type User from '@/types/User.ts';
 
 type HomePageProps = {
   user: User | null;
@@ -16,8 +16,8 @@ export default function HomePage({ user }: HomePageProps) {
   const { data: session, status } = useSession();
   const router = useRouter();
   useEffect(() => {
-  if (status === 'unauthenticated') router.push('/login');
-}, [status, router]);
+    if (status === 'unauthenticated') router.push('/login');
+  }, [status, router]);
   const [messages, setMessages] = useState<Messages[]>([]);
   const [ping, setPing] = useState<number | null>(null);
   const pendingPingRef = useRef<{ userId: string; startedAt: number } | null>(
@@ -40,14 +40,27 @@ export default function HomePage({ user }: HomePageProps) {
 
   return (
     <div className="flex justify-center items-center h-screen transition-all">
-      <div className="transition-all flex flex-col p-2 bg-gray-900">
-        {activeUsers
-          ?.filter((u): u is string => !!u && u !== user!.userId)
-          .map((u) => (
-            <Link href={`${u}/chat`} key={u}>
-              {u}
-            </Link>
-          ))}
+      <div className="transition-all flex flex-col p-2 bg-gray-900 min-h-[80vh] min-w-[80vw]">
+        <div className="flex justify-end">
+          <button
+            type="button"
+            className="p-2 bg-red-600 text-white"
+            onClick={() => signOut}
+          >
+            Sign Out
+          </button>
+        </div>
+        {activeUsers && activeUsers.length >= 1 ? (
+          activeUsers
+            ?.filter((u): u is string => !!u && u !== user!.userId)
+            .map((u) => (
+              <Link href={`${u}/chat`} key={u}>
+                {u}
+              </Link>
+            ))
+        ) : (
+          <span className="self-center place-self-center">No users online</span>
+        )}
       </div>
     </div>
   );

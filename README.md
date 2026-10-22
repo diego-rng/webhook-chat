@@ -9,7 +9,8 @@ Aplicação de chat usando Webhooks para conectar clientes e usando Frameworks d
 | :-----: | :--------: | ------------------------------------------------- |
 |  0.1.0  | 2026-10-06 | README.md adaptado, base do projeto apresentada.  |
 |  0.1.1  | 2026-10-07 | Adicionada interação entre clientes               |
-|  0.1.2  | 2026-19-09 | Alterada a arquitetura do projeto                 |
+|  0.1.2  | 2026-10-09 | Alterada a arquitetura do projeto                 |
+|  0.2.0  | 2026-10-22 | Adicionados base de dados, autenticação           |
 
 ## Sumário
 
@@ -30,7 +31,7 @@ Aplicação baseada em Next.js e TypeScript usando Webhooks e frameworks do Deno
 | Separação de conversas   | Separar conversas entre clientes           | Não           | 2 dias +-                         |
 | Indicador de recebido    | Comunicar se a mensagem foi recebida       | Não.          | 1 dia +-                          |
 | Grupos                   | Permitir chat entre múltiplos clientes     | Não.          | 3 dias +-                         |
-| Autenticação             | Identificar usuários e guardar informações | Não.          | 3 dias +-                         |
+| Autenticação             | Identificar usuários e guardar informações | Sim.          | 3 dias +-                         |
 
 ## Stack Técnico
 
