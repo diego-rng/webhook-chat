@@ -4,7 +4,7 @@ export const contract = defineContract({}, ({ field, model, rel }) => {
   const User = model('User', {
     fields: {
       id: field.id.uuidv4String(),
-      username: field.text().optional(),
+      username: field.text(),
       name: field.text().optional(),
       active: field.boolean(),
       createdAt: field.temporal.createdAtString(),
