@@ -9,15 +9,15 @@ export default async function handleDBConnection(filters: {users?: {id?: string,
       
       switch (filters.users) {
         case (filters.users.id && filters.users.createdAt): {
-          const users = await db.orm.public.User.where({ id: id as Char<36>, createdAt: createdAt }).all();
+          const users = await db.orm.public.User.where({ id: id as Char<36>, createdAt: createdAt }).include("participating_conversations").all();
           return { users }
         }
         case (filters.users.id): {
-        const users = await db.orm.public.User.where({ id: id as Char<36> }).all()
+        const users = await db.orm.public.User.where({ id: id as Char<36> }).include("participating_conversations").first()
         return { users }
         }
         case (filters.users.createdAt): {
-        const users = await db.orm.public.User.where({ createdAt: createdAt }).all()
+        const users = await db.orm.public.User.where({ createdAt: createdAt }).include("participating_conversations").all()
         return { users }
         }
       }
@@ -46,10 +46,11 @@ export default async function handleDBConnection(filters: {users?: {id?: string,
       return { conversations };
     }
   } else {
-    const users = await db.orm.public.User.all();
-    const conversations = await db.orm.public.Conversation.all();
+    const users = await db.orm.public.User.include("created_conversations").include("participating_conversations").all();
+    const conversations = await db.orm.public.Conversation.include("author").include("participants").all();
     const messages = await db.orm.public.Message.all();
+    const participants = await db.orm.public.ConversationParticipant.all();
 
-    return { users, conversations, messages }
+    return { users, conversations, messages, participants }
   }
 }

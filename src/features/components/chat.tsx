@@ -10,7 +10,7 @@ interface ChatProps {
   user: User | null;
 }
 export default function ChatPage({ user } : ChatProps) {
-  const port = 8080;
+  const port = 4000;
   const [messages, setMessages] = useState<Messages[]>([]);
   const [activeUsers, setActiveUsers] = useState<Messages['userId'][] | null>(
     null,

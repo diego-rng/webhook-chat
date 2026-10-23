@@ -1,3 +1,4 @@
+'use server'
 import { db } from '@/prisma/db.ts';
 import Providers from '@features/components/providers.tsx';
 import HomePage from '@features/components/home.tsx';
@@ -6,6 +7,7 @@ import { authOptions } from '@/lib/auth.ts';
 import { redirect } from 'next/navigation';
 import User from '@/types/User.ts';
 import type { Char } from '@prisma/orm-postgres/target/codec-types';
+import handleDBConnection from "../features/web-socket/api/db-connection.ts";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
@@ -26,6 +28,8 @@ export default async function Home() {
 
   if (!userInfo) redirect('/login')
 
+  const conversations = handleDBConnection({users: {id: session.user.user_id}})
+
   const user: User = {
     userId: userTemp.user_id,
     username: userTemp.username,
@@ -38,7 +42,7 @@ export default async function Home() {
 
   return (
     <Providers session={session}>
-      <HomePage user={user ?? null} />
+      <HomePage user={user ?? null} db={conversations} />
     </Providers>
   );
 }

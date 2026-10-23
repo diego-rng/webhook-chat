@@ -11,6 +11,7 @@ Aplicação de chat usando Webhooks para conectar clientes e usando Frameworks d
 |  0.1.1  | 2026-10-07 | Adicionada interação entre clientes               |
 |  0.1.2  | 2026-10-09 | Alterada a arquitetura do projeto                 |
 |  0.2.0  | 2026-10-22 | Adicionados base de dados, autenticação           |
+|  0.2.1  | 2026-10-23 | Adicionada interface de adicionar conversas       | 
 
 ## Sumário
 

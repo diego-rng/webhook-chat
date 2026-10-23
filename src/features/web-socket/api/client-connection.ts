@@ -55,7 +55,8 @@ export default function useClientConnection(
         setMessages,
       );
 
-    ws.onclose = () => {
+    ws.onclose = (event) => {
+      if (event.code) console.error(`${event.code}`)
       setPing(null);
       pendingPingRef.current = null;
       if (heartbeatInterval !== null) clearInterval(heartbeatInterval);

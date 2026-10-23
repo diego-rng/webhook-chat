@@ -1,8 +1,8 @@
 import WebSocket, { WebSocketServer } from 'ws';
-import { Messages } from '../types/Messages.ts';
+import Messages from '../types/Messages.ts';
 import { ExtWebSocket } from '../types/ExtWebSocket.ts';
 
-const port = 8080;
+const port = 4000;
 const wss = new WebSocketServer({ port });
 
 wss.on('connection', (ws: ExtWebSocket) => {
