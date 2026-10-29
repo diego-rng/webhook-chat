@@ -4,16 +4,21 @@ import { db } from "@/prisma/db.ts";
 import User from "@/types/User.ts";
 import { Char } from "@prisma/orm-postgres/target/codec-types";
 import { getServerSession } from "next-auth";
-import { SessionProvider } from "next-auth/react";
+import Providers from '@features/components/providers.tsx';
 import { redirect } from "next/navigation";
 
-export default async function Chat() {
+export default async function Chat({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}) {
+  const { slug } = await params
   const session = await getServerSession(authOptions)
   if (!session?.user.username) redirect('/login')
   
   const userTemp = await db.orm.public.UserCredentials.where({
     username: session.user.username,
-  }).first();
+  }).first(); 
 
   if (!userTemp) redirect('/login');
 
@@ -31,9 +36,21 @@ export default async function Chat() {
     email: userInfo!.email,
   };
 
+  const targetInfo = await db.orm.public.User.where({id: slug as Char<36>}).first()
+
+  const target: User = {
+    userId: slug,
+    username: targetInfo!.username,
+    name: targetInfo!.name,
+    active: targetInfo!.active,
+    createdAt: new Date(targetInfo!.createdAt),
+    updatedAt: new Date(targetInfo!.updatedAt),
+    email: targetInfo!.email,
+  }
+
   return (
-    <SessionProvider session={session}>
-      <ChatPage user={user ?? null} />
-    </SessionProvider>
+    <Providers session={session}>
+      <ChatPage user={user ?? null} target={target} />
+    </Providers>
   )
 }

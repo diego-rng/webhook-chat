@@ -1,16 +1,25 @@
 'use client';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Messages from '../../types/Messages.ts';
 import sendMessage from '../../features/web-socket/components/client-send.ts';
 import useClientConnection from '../../features/web-socket/api/client-connection.ts';
 import User from '@/types/User.ts';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 interface ChatProps {
   user: User | null;
+  target: User | null;
 }
-export default function ChatPage({ user } : ChatProps) {
+export default function ChatPage({ user, target }: ChatProps) {
   const port = 4000;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { data: _session, status } = useSession();
+  const router = useRouter();
+  useEffect(() => {
+    if (user === null) router.push('/login');
+    if (status === 'unauthenticated') router.push('/login');
+  }, [status, router, user]);
   const [messages, setMessages] = useState<Messages[]>([]);
   const [activeUsers, setActiveUsers] = useState<Messages['userId'][] | null>(
     null,
@@ -21,7 +30,6 @@ export default function ChatPage({ user } : ChatProps) {
   const pendingPingRef = useRef<{ userId: string; startedAt: number } | null>(
     null,
   );
-  if (!user) redirect('/login')
 
   useClientConnection(
     port,
@@ -40,20 +48,6 @@ export default function ChatPage({ user } : ChatProps) {
           <span className="font-bold text-2xl flex">
             {ping === null ? 'Server not connected' : 'Connected'}
           </span>
-
-          <div>
-            {activeUsers
-              ?.filter((u): u is string => !!u && u !== user.userId)
-              .map((u) => (
-                <button
-                  type="button"
-                  className="bg-gray-600 px-1 py-0.5"
-                  key={u}
-                >
-                  {u.slice(0, 8)}
-                </button>
-              ))}
-          </div>
         </div>
         <div className="min-w-300 max-h-200 overflow-scroll transition-all gap-2 mb-4 min-h-30 flex flex-col">
           {messages.map((message, index) => {
@@ -82,7 +76,13 @@ export default function ChatPage({ user } : ChatProps) {
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey && area.trim().length >= 1) {
                 e.preventDefault();
-                sendMessage(area, wsRef, user.userId, user!.userId, setMessages);
+                sendMessage(
+                  area,
+                  wsRef,
+                  user!.userId,
+                  target!.userId,
+                  setMessages,
+                );
                 setArea('');
               }
             }}
@@ -90,17 +90,6 @@ export default function ChatPage({ user } : ChatProps) {
           <div className="flex flex-col">
             <span>Latency:</span>
             <span>{ping === null ? '--' : `${ping}ms`}</span>
-          </div>
-
-          <div className="flex flex-col">
-            <span>Active Users:</span>
-            <div className="flex  gap-2">
-              {activeUsers
-                ?.filter((u): u is string => !!u && u !== user.userId)
-                .map((u) => (
-                  <span key={u}>{u.slice(0, 8)}</span>
-                ))}
-            </div>
           </div>
         </div>
       </div>

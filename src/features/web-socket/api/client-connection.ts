@@ -63,7 +63,7 @@ export default function useClientConnection(
       if (heartbeatTimeout !== null) clearTimeout(heartbeatTimeout);
       console.log('WebSocket disconnected');
     };
-    ws.onerror = (error) => console.error(`${error}`);
+    ws.onerror = (error) => console.error(`Error:${error}`);
 
     console.log(`Listening at ${port}`);
 

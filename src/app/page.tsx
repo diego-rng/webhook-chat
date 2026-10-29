@@ -28,7 +28,8 @@ export default async function Home() {
 
   if (!userInfo) redirect('/login')
 
-  const conversations = handleDBConnection({users: {id: session.user.user_id}})
+  const conversations = await handleDBConnection({parts: userTemp.user_id})
+  console.log(JSON.stringify(conversations))
 
   const user: User = {
     userId: userTemp.user_id,
