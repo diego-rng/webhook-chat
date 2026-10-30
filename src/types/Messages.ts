@@ -1,5 +1,6 @@
 export default interface Messages {
   value?: string;
+  username?: string;
   origin: "Client" | "Server";
   userId?: string;
   messageId: string;

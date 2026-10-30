@@ -115,7 +115,7 @@ export default function HomePage({ user, db }: HomePageProps) {
         <div className="flex flex-row">
           {userConversations && userConversations.length >= 1
             ? userConversations.map((u) => (
-                <Link href={`${u.user_id}/chat`} className="bg-gray-500 px-1 py-2 mx-2" key={u.user_id}>
+                <Link href={`${u.conversation_id}/chat`} className="bg-gray-500 px-1 py-2 mx-2" key={u.conversation_id}>
                   {u.conversation_id}
                 </Link>
               ))
@@ -143,6 +143,7 @@ export default function HomePage({ user, db }: HomePageProps) {
           <input
             type="text"
             className="bg-black"
+            value={addUsername}
             onChange={(e) => setAddUsername(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey && addUsername.trim().length >= 1) {

@@ -6,6 +6,7 @@ import { Char } from "@prisma/orm-postgres/target/codec-types";
 import { getServerSession } from "next-auth";
 import Providers from '@features/components/providers.tsx';
 import { redirect } from "next/navigation";
+import Conversation from "../../../types/Conversation.ts";
 
 export default async function Chat({
   params,
@@ -36,16 +37,14 @@ export default async function Chat({
     email: userInfo!.email,
   };
 
-  const targetInfo = await db.orm.public.User.where({id: slug as Char<36>}).first()
+  const targetConversation = await db.orm.public.Conversation.where({id: slug as Char<36>}).first()
+  const targetMembers = await db.orm.public.ConversationParticipant.where({conversation_id: slug as Char<36>}).all()
 
-  const target: User = {
-    userId: slug,
-    username: targetInfo!.username,
-    name: targetInfo!.name,
-    active: targetInfo!.active,
-    createdAt: new Date(targetInfo!.createdAt),
-    updatedAt: new Date(targetInfo!.updatedAt),
-    email: targetInfo!.email,
+  const target: Conversation = {
+    conversationId: slug,
+    conversationName: targetConversation!.conversation_name,
+    conversationCreator: targetConversation!.created_by,
+    conversationMembers: targetMembers
   }
 
   return (

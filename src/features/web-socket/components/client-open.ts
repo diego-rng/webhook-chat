@@ -4,7 +4,6 @@ import Messages from '../../../types/Messages.ts';
 export default function onClientOpen(
   ws: WebSocket,
   id: string,
-  setMessages: (value: SetStateAction<Messages[]>) => void,
   sendHeartbeat: () => void,
   heartbeatInterval: NodeJS.Timeout | null,
 ) {
@@ -26,7 +25,6 @@ export default function onClientOpen(
     timeSent: new Date(),
   };
   ws.send(JSON.stringify(openMessage));
-  setMessages((prev) => [...prev, openMessage]);
   sendHeartbeat();
   heartbeatInterval = setInterval(sendHeartbeat, 5000);
 }

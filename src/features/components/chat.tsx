@@ -6,10 +6,11 @@ import useClientConnection from '../../features/web-socket/api/client-connection
 import User from '@/types/User.ts';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import Conversation from "../../types/Conversation.ts";
 
 interface ChatProps {
   user: User | null;
-  target: User | null;
+  target: Conversation | null;
 }
 export default function ChatPage({ user, target }: ChatProps) {
   const port = 4000;
@@ -37,8 +38,8 @@ export default function ChatPage({ user, target }: ChatProps) {
     user!.userId,
     setPing,
     wsRef,
-    setMessages,
     setActiveUsers,
+    target!.conversationId
   );
 
   return (
@@ -57,7 +58,7 @@ export default function ChatPage({ user, target }: ChatProps) {
                   hour: '2-digit',
                   minute: '2-digit',
                 })}{' '}
-                [{message.origin}] {message.value}{' '}
+                [{message.origin === 'Server' ? 'Server' : message.username}] {message.value}{' '}
                 <span className="justify-self-end ml-4 text-gray-500">
                   {message.seen ? 'Seen' : ''}
                 </span>
@@ -79,8 +80,9 @@ export default function ChatPage({ user, target }: ChatProps) {
                 sendMessage(
                   area,
                   wsRef,
+                  user!.username,
                   user!.userId,
-                  target!.userId,
+                  target!.conversationId,
                   setMessages,
                 );
                 setArea('');

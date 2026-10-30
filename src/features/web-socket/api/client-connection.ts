@@ -9,10 +9,10 @@ export default function useClientConnection(
   id: string,
   setPing: (value: SetStateAction<number | null>) => void,
   wsRef: RefObject<WebSocket | null>,
-  setMessages: (value: SetStateAction<Messages[]>) => void,
   setActiveUsers: (
     value: SetStateAction<(string | undefined)[] | null>,
   ) => void,
+  conversationId: string,
 ) {
   useEffect(() => {
     const ws = new WebSocket(`ws://localhost:${port}`);
@@ -43,7 +43,7 @@ export default function useClientConnection(
     }
     wsRef.current = ws;
     ws.onopen = () =>
-      onClientOpen(ws, id, setMessages, sendHeartbeat, heartbeatTimeout);
+      onClientOpen(ws, id, sendHeartbeat, heartbeatTimeout);
 
     ws.onmessage = (event) =>
       onClientMessage(
@@ -52,7 +52,7 @@ export default function useClientConnection(
         setPing,
         heartbeatTimeout,
         setActiveUsers,
-        setMessages,
+        conversationId
       );
 
     ws.onclose = (event) => {
@@ -63,7 +63,7 @@ export default function useClientConnection(
       if (heartbeatTimeout !== null) clearTimeout(heartbeatTimeout);
       console.log('WebSocket disconnected');
     };
-    ws.onerror = (error) => console.error(`Error:${error}`);
+    ws.onerror = (error) => console.error(`Error:${JSON.stringify(error)}`);
 
     console.log(`Listening at ${port}`);
 
@@ -73,5 +73,5 @@ export default function useClientConnection(
       pendingPingRef.current = null;
       ws.close();
     };
-  }, [id, pendingPingRef, port, setActiveUsers, setMessages, setPing, wsRef]);
+  }, [id, pendingPingRef, port, conversationId, setActiveUsers, setPing, wsRef]);
 }

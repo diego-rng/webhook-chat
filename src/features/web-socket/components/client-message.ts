@@ -1,7 +1,8 @@
 import { RefObject, SetStateAction } from 'react';
 import Messages from '../../../types/Messages.ts';
+import { db } from "../../../prisma/db.ts";
 
-export default function onClientMessage(
+export default async function onClientMessage(
   event: MessageEvent,
   pendingPingRef: RefObject<{ userId: string; startedAt: number } | null>,
   setPing: (value: SetStateAction<number | null>) => void,
@@ -9,7 +10,7 @@ export default function onClientMessage(
   setActiveUsers: (
     value: SetStateAction<(string | undefined)[] | null>,
   ) => void,
-  setMessages: (value: SetStateAction<Messages[]>) => void,
+  conversationId: string
 ) {
   const payload: Messages = JSON.parse(String(event.data));
 
@@ -34,24 +35,11 @@ export default function onClientMessage(
     return;
   }
 
-  if (payload.type === 'message-confirmation') {
-    setMessages((prev) =>
-      prev.map((item) =>
-        item.messageId === payload.messageId ? { ...item, seen: true } : item,
-      ),
-    );
-    console.log('Server received the message!');
-    return;
-  }
+  if (!payload.value) return
 
-  console.log(`Received a message from the server: ${event.data}`);
-  setMessages((prev) => [
-    ...prev,
-    {
-      messageId: payload.messageId,
-      value: payload.value,
-      origin: payload.origin,
-      timeSent: new Date(),
-    },
-  ]);
+  await db.orm.public.Message.create({
+    content: payload.value,
+    conversation_id: conversationId,
+    sent_by: payload.userId,
+  })
 }

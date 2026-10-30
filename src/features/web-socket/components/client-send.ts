@@ -4,6 +4,7 @@ import { RefObject, SetStateAction } from 'react';
 export default function sendMessage(
   message: string,
   wsRef: RefObject<WebSocket | null>,
+  username: string,
   id: string,
   messageTarget: string | null | undefined,
   setMessages: (value: SetStateAction<Messages[]>) => void,
@@ -12,6 +13,7 @@ export default function sendMessage(
     const sentMessage: Messages = {
       userId: id,
       messageId: crypto.randomUUID(),
+      username: username,
       value: message,
       origin: 'Client',
       timeSent: new Date(),
