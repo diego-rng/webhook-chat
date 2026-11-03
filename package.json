@@ -24,12 +24,11 @@
   "devDependencies": {
     "@prisma/cli-engine": "0.7.0",
     "@tailwindcss/postcss": "^4",
-    "@types/bcryptjs": "^3.0.0",
     "@types/node": "^20",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19",
     "@types/ws": "^8.18.2",
-    "eslint": "^9.39.5",
+    "eslint": "^10.14.0",
     "eslint-config-next": "16.3.8",
     "prisma": "8.0.0-rc.23",
     "tailwindcss": "^4",

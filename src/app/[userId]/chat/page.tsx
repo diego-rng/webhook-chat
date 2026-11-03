@@ -1,30 +1,31 @@
-import ChatPage from "@/features/components/chat.tsx";
-import { authOptions } from "@/lib/auth.ts";
-import { db } from "@/prisma/db.ts";
-import User from "@/types/User.ts";
-import { Char } from "@prisma/orm-postgres/target/codec-types";
-import { getServerSession } from "next-auth";
+import ChatPage from '@/features/components/chat.tsx';
+import { authOptions } from '@/lib/auth.ts';
+import { db } from '@/prisma/db.ts';
+import User from '@/types/User.ts';
+import { getServerSession } from 'next-auth';
 import Providers from '@features/components/providers.tsx';
-import { redirect } from "next/navigation";
-import Conversation from "../../../types/Conversation.ts";
+import { redirect } from 'next/navigation';
+import Conversation from '../../../types/Conversation.ts';
+import pullHistory from '../../../features/components/pullConversation.tsx';
+import lookUpMembers from "../../../features/components/lookUpMembers.tsx";
 
 export default async function Chat({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{ userId: string }>;
 }) {
-  const { slug } = await params
-  const session = await getServerSession(authOptions)
-  if (!session?.user.username) redirect('/login')
-  
+  const { userId } = await params;
+  const session = await getServerSession(authOptions);
+  if (!session?.user.username) redirect('/login');
+
   const userTemp = await db.orm.public.UserCredentials.where({
     username: session.user.username,
-  }).first(); 
+  }).first();
 
   if (!userTemp) redirect('/login');
 
   const userInfo = await db.orm.public.User.where({
-    id: userTemp.user_id as Char<36>,
+    id: userTemp.user_id as string & { readonly __charLength: 36 },
   }).first();
 
   const user: User = {
@@ -37,19 +38,27 @@ export default async function Chat({
     email: userInfo!.email,
   };
 
-  const targetConversation = await db.orm.public.Conversation.where({id: slug as Char<36>}).first()
-  const targetMembers = await db.orm.public.ConversationParticipant.where({conversation_id: slug as Char<36>}).all()
+  const targetConversation = await db.orm.public.Conversation.where({
+    id: userId as string & { readonly __charLength: 36 },
+  }).first();
+  const targetMembers = await db.orm.public.ConversationParticipant.where({
+    conversation_id: userId as string & { readonly __charLength: 36 },
+  }).all();
 
   const target: Conversation = {
-    conversationId: slug,
+    conversationId: targetConversation!.id as string & {readonly __charLength: 36},
     conversationName: targetConversation!.conversation_name,
     conversationCreator: targetConversation!.created_by,
-    conversationMembers: targetMembers
-  }
+    conversationMembers: targetMembers,
+  };
+
+  // const messageHistory = await pullHistory(target!.conversationId as string & {readonly __charLength: 36});
+
+  // const convMembers = await lookUpMembers(target!.conversationId as string & {readonly __charLength: 36});
 
   return (
     <Providers session={session}>
       <ChatPage user={user ?? null} target={target} />
     </Providers>
-  )
+  );
 }

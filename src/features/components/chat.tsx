@@ -3,14 +3,16 @@ import { useEffect, useRef, useState } from 'react';
 import Messages from '../../types/Messages.ts';
 import sendMessage from '../../features/web-socket/components/client-send.ts';
 import useClientConnection from '../../features/web-socket/api/client-connection.ts';
-import User from '@/types/User.ts';
+import type User from '@/types/User.ts';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import Conversation from "../../types/Conversation.ts";
+import type Conversation from '../../types/Conversation.ts';
 
 interface ChatProps {
   user: User | null;
   target: Conversation | null;
+  // messageHistory: Messages[];
+  // convMembers: User[];
 }
 export default function ChatPage({ user, target }: ChatProps) {
   const port = 4000;
@@ -39,7 +41,7 @@ export default function ChatPage({ user, target }: ChatProps) {
     setPing,
     wsRef,
     setActiveUsers,
-    target!.conversationId
+    target!.conversationId,
   );
 
   return (
@@ -58,7 +60,8 @@ export default function ChatPage({ user, target }: ChatProps) {
                   hour: '2-digit',
                   minute: '2-digit',
                 })}{' '}
-                [{message.origin === 'Server' ? 'Server' : message.username}] {message.value}{' '}
+                [{message.origin === 'Server' ? 'Server' : message.username}]{' '}
+                {message.value}{' '}
                 <span className="justify-self-end ml-4 text-gray-500">
                   {message.seen ? 'Seen' : ''}
                 </span>

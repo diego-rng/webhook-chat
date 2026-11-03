@@ -1,8 +1,8 @@
 import { RefObject, SetStateAction } from 'react';
 import Messages from '../../../types/Messages.ts';
-import { db } from "../../../prisma/db.ts";
+import logMessage from "./client-log.ts";
 
-export default async function onClientMessage(
+export default function onClientMessage(
   event: MessageEvent,
   pendingPingRef: RefObject<{ userId: string; startedAt: number } | null>,
   setPing: (value: SetStateAction<number | null>) => void,
@@ -14,7 +14,9 @@ export default async function onClientMessage(
 ) {
   const payload: Messages = JSON.parse(String(event.data));
 
-  if (payload?.type === 'latency-pong') {
+  if (!payload) return
+
+  if (payload.type === 'latency-pong') {
     const pending = pendingPingRef.current;
 
     if (pending?.userId === payload.userId) {
@@ -31,15 +33,11 @@ export default async function onClientMessage(
       const users: string[] = JSON.parse(payload.value);
       setActiveUsers(users);
     }
-
+    
     return;
   }
-
+  
   if (!payload.value) return
-
-  await db.orm.public.Message.create({
-    content: payload.value,
-    conversation_id: conversationId,
-    sent_by: payload.userId,
-  })
+  
+  if (payload.type != 'latency-pong') logMessage(payload, conversationId)
 }

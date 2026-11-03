@@ -236,6 +236,13 @@
                   "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
+              },
+              "sent_time": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
               }
             },
             "relations": {
@@ -288,6 +295,9 @@
                 },
                 "sent_by": {
                   "column": "sent_by"
+                },
+                "sent_time": {
+                  "column": "sent_time"
                 }
               },
               "namespaceId": "public",
@@ -593,6 +603,11 @@
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": false
+                },
+                "sent_time": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "dataType": "pg/timestamptz",
+                  "nullable": false
                 }
               },
               "foreignKeys": [],
@@ -707,7 +722,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "23d01584faf7a443d4eea645da05780028ad91f8c007efb82e1a335e6d78bdd0"
+    "storageHash": "a312bccc7dddc2ac950d17ef632dc116b9b00389317014230b7d7b71b63b64bb"
   },
   "execution": {
     "executionHash": "87cd33d33e62449f8b7a2543e05a354cb8b2f43e5366c91c380d5865fb28aff4",

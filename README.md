@@ -29,10 +29,11 @@ Aplicação baseada em Next.js e TypeScript usando Webhooks e frameworks do Deno
 | Feature                  | Uso                                        | Implementado? | Tempo Esperado para Implementação |
 | ------------------------ | ------------------------------------------ | ------------- | --------------------------------- |
 | Interação entre clientes | Permitir chat entre clientes               | Sim.          | 1 dia +-                          |
-| Separação de conversas   | Separar conversas entre clientes           | Não           | 2 dias +-                         |
+| Separação de conversas   | Separar conversas entre clientes           | Sim.          | 2 dias +-                         |
 | Indicador de recebido    | Comunicar se a mensagem foi recebida       | Não.          | 1 dia +-                          |
-| Grupos                   | Permitir chat entre múltiplos clientes     | Não.          | 3 dias +-                         |
+| Grupos                   | Permitir chat entre múltiplos clientes     | Sim.          | 3 dias +-                         |
 | Autenticação             | Identificar usuários e guardar informações | Sim.          | 3 dias +-                         |
+| UI                       | Experiência de usuário                     | Não.          | 3 dias +-                         |
 
 ## Stack Técnico
 

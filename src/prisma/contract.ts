@@ -28,6 +28,7 @@ export const contract = defineContract({}, ({ field, model, rel }) => {
       conversation_id: field.text(),
       content: field.text(),
       attachment: field.text().optional(),
+      sent_time: field.dateTime(),
     },
   });
 

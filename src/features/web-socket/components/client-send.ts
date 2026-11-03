@@ -1,5 +1,6 @@
 import Messages from '../../../types/Messages.ts';
 import { RefObject, SetStateAction } from 'react';
+import logMessage from "./client-log.ts";
 
 export default function sendMessage(
   message: string,
@@ -22,5 +23,6 @@ export default function sendMessage(
     };
     wsRef.current.send(JSON.stringify(sentMessage));
     setMessages((prev) => [...prev, sentMessage]);
+    logMessage(sentMessage, messageTarget!)
   }
 }

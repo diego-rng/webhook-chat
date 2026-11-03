@@ -5,5 +5,5 @@
     "ws": "npm:ws@^8.22.0",
     "@features/*": "./src/features/*"
   },
-  "allowScripts": ["npm:unrs-resolver@1.12.2"]
+  "allowScripts": ["npm:esbuild@0.28.2", "npm:unrs-resolver@1.12.2", "npm:workerd@1.20261002.1"]
 }
