@@ -13,10 +13,11 @@ export default function useClientConnection(
     value: SetStateAction<(string | undefined)[] | null>,
   ) => void,
   conversationId: string,
+  setMessages: (value: SetStateAction<Messages[]>) => void
 ) {
   useEffect(() => {
-    const ws = new WebSocket(`ws://localhost:${port}`);
-    const heartbeatInterval: ReturnType<typeof setInterval> | null = null;
+    const ws = new WebSocket(`ws://172.16.8.132:${port}`);
+    let heartbeatInterval: ReturnType<typeof setInterval> | null = null;
     let heartbeatTimeout: ReturnType<typeof setTimeout> | null = null;
 
     function sendHeartbeat() {
@@ -42,8 +43,9 @@ export default function useClientConnection(
       }, 3000);
     }
     wsRef.current = ws;
-    ws.onopen = () =>
-      onClientOpen(ws, id, sendHeartbeat, heartbeatTimeout);
+    ws.onopen = () => {
+      heartbeatInterval = onClientOpen(ws, id, conversationId, sendHeartbeat);
+    };
 
     ws.onmessage = (event) =>
       onClientMessage(
@@ -52,7 +54,8 @@ export default function useClientConnection(
         setPing,
         heartbeatTimeout,
         setActiveUsers,
-        conversationId
+        conversationId,
+        setMessages
       );
 
     ws.onclose = (event) => {
@@ -62,7 +65,7 @@ export default function useClientConnection(
       if (heartbeatInterval !== null) clearInterval(heartbeatInterval);
       if (heartbeatTimeout !== null) clearTimeout(heartbeatTimeout);
       console.log('WebSocket disconnected');
-    };
+    };  
     ws.onerror = (error) => console.error(`Error:${JSON.stringify(error)}`);
 
     console.log(`Listening at ${port}`);

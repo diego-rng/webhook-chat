@@ -10,5 +10,6 @@ export default async function logMessage(
     content: JSON.stringify(payload.value!),
     conversation_id: conversationId,
     sent_by: payload.userId,
+    sent_time: new Date().toTemporalInstant(),
   })
 }

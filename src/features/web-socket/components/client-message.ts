@@ -1,6 +1,6 @@
 import { RefObject, SetStateAction } from 'react';
 import Messages from '../../../types/Messages.ts';
-import logMessage from "./client-log.ts";
+import logMessage from './client-log.ts';
 
 export default function onClientMessage(
   event: MessageEvent,
@@ -10,11 +10,12 @@ export default function onClientMessage(
   setActiveUsers: (
     value: SetStateAction<(string | undefined)[] | null>,
   ) => void,
-  conversationId: string
+  conversationId: string,
+  setMessages: (value: SetStateAction<Messages[]>) => void,
 ) {
   const payload: Messages = JSON.parse(String(event.data));
 
-  if (!payload) return
+  if (!payload) return;
 
   if (payload.type === 'latency-pong') {
     const pending = pendingPingRef.current;
@@ -33,11 +34,24 @@ export default function onClientMessage(
       const users: string[] = JSON.parse(payload.value);
       setActiveUsers(users);
     }
-    
+
     return;
   }
-  
-  if (!payload.value) return
-  
-  if (payload.type != 'latency-pong') logMessage(payload, conversationId)
+
+  if (!payload.value) return;
+
+  if (payload.type === 'user-message') {
+    console.log(payload);
+    setMessages((prev) => [{
+      messageId: payload.messageId,
+      origin: payload.origin,
+      timeSent: new Date(),
+      seen: true,
+      target: payload.target,
+      type: payload.type,
+      userId: payload.userId, 
+      username: payload.username,
+      value: payload.value
+    }, ...prev]);
+  }
 }

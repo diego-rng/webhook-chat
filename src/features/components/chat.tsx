@@ -11,19 +11,19 @@ import type Conversation from '../../types/Conversation.ts';
 interface ChatProps {
   user: User | null;
   target: Conversation | null;
-  // messageHistory: Messages[];
-  // convMembers: User[];
+  messageHistory: Messages[];
+  convMembers: User[];
 }
-export default function ChatPage({ user, target }: ChatProps) {
+export default function ChatPage({ user, target, messageHistory, convMembers }: ChatProps) {
   const port = 4000;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data: _session, status } = useSession();
   const router = useRouter();
+  const [messages, setMessages] = useState<Messages[]>(messageHistory);
   useEffect(() => {
     if (user === null) router.push('/login');
     if (status === 'unauthenticated') router.push('/login');
   }, [status, router, user]);
-  const [messages, setMessages] = useState<Messages[]>([]);
   const [activeUsers, setActiveUsers] = useState<Messages['userId'][] | null>(
     null,
   );
@@ -34,6 +34,7 @@ export default function ChatPage({ user, target }: ChatProps) {
     null,
   );
 
+
   useClientConnection(
     port,
     pendingPingRef,
@@ -42,6 +43,7 @@ export default function ChatPage({ user, target }: ChatProps) {
     wsRef,
     setActiveUsers,
     target!.conversationId,
+    setMessages
   );
 
   return (
@@ -52,7 +54,7 @@ export default function ChatPage({ user, target }: ChatProps) {
             {ping === null ? 'Server not connected' : 'Connected'}
           </span>
         </div>
-        <div className="min-w-300 max-h-200 overflow-scroll transition-all gap-2 mb-4 min-h-30 flex flex-col">
+        <div className="min-w-300 max-h-200 overflow-scroll transition-all gap-2 mb-4 min-h-30 flex flex-col-reverse">
           {messages.map((message, index) => {
             return (
               <span key={index} className="flex">
@@ -60,7 +62,7 @@ export default function ChatPage({ user, target }: ChatProps) {
                   hour: '2-digit',
                   minute: '2-digit',
                 })}{' '}
-                [{message.origin === 'Server' ? 'Server' : message.username}]{' '}
+                [{message.origin === 'Server' ? 'Server' : convMembers.find((i) => i.userId === message.userId)?.username ?? 'Unknown'}]{' '}
                 {message.value}{' '}
                 <span className="justify-self-end ml-4 text-gray-500">
                   {message.seen ? 'Seen' : ''}

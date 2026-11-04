@@ -3,7 +3,7 @@ import Messages from '../types/Messages.ts';
 import { ExtWebSocket } from '../types/ExtWebSocket.ts';
 
 const port = 4000;
-const wss = new WebSocketServer({ port });
+const wss = new WebSocketServer({ port, host: '0.0.0.0' });
 
 wss.on('connection', (ws: ExtWebSocket) => {
   ws.isAlive = true;
@@ -27,17 +27,24 @@ wss.on('connection', (ws: ExtWebSocket) => {
     }
     if (message.type === 'identification-msg' && message.userId) {
       ws.userId = message.userId;
+      ws.conversationId = message.target ?? undefined;
       return;
     }
 
-    console.log(`Received message from client: ${message.value}`);
+    if (message.type !== 'user-message') return;
 
-    const target = [...wss.clients].find(
-      (c) => (c as ExtWebSocket).userId === message.target,
-    );
-    if (target && target.readyState === WebSocket.OPEN) {
-      target.send(JSON.stringify(message));
+    for (const client of wss.clients) {
+      const peer = client as ExtWebSocket;
+      if (
+        peer !== ws &&
+        peer.conversationId === message.target &&
+        peer.readyState === WebSocket.OPEN
+      ) {
+        peer.send(JSON.stringify(message));
+      }
     }
+
+    console.log(`Received message from client: ${message.value}`);
 
     const confirmation: Messages = {
       type: 'message-confirmation',

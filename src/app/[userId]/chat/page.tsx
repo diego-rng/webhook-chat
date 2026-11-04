@@ -52,13 +52,13 @@ export default async function Chat({
     conversationMembers: targetMembers,
   };
 
-  // const messageHistory = await pullHistory(target!.conversationId as string & {readonly __charLength: 36});
+  const messageHistory = await pullHistory(target!.conversationId as string & {readonly __charLength: 36});
 
-  // const convMembers = await lookUpMembers(target!.conversationId as string & {readonly __charLength: 36});
+  const convMembers = await lookUpMembers(target!.conversationId as string & {readonly __charLength: 36});
 
   return (
     <Providers session={session}>
-      <ChatPage user={user ?? null} target={target} />
+      <ChatPage user={user ?? null} target={target} messageHistory={messageHistory} convMembers={convMembers} />
     </Providers>
   );
 }

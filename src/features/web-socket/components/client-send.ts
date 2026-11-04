@@ -22,7 +22,7 @@ export default function sendMessage(
       target: messageTarget,
     };
     wsRef.current.send(JSON.stringify(sentMessage));
-    setMessages((prev) => [...prev, sentMessage]);
+    setMessages((prev) => [sentMessage, ...prev]);
     logMessage(sentMessage, messageTarget!)
   }
 }

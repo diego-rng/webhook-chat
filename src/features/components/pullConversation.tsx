@@ -7,10 +7,7 @@ export default async function pullHistory(
 ) {
   const res = await db.orm.public.Message.where({conversation_id: conversationId}).orderBy((u) => u.sent_time.desc()).all()
 
-  const conversation: Messages[] = []
-
-  for (const i of res) {
-    conversation.push({
+  const conversation: Messages[] = res.map((i) => ({
       messageId: i.id as string & {readonly __charLength: 36},
       origin: 'Client',
       timeSent: new Date(i.sent_time.epochMilliseconds),
@@ -19,8 +16,7 @@ export default async function pullHistory(
       type: (i.attachment ? 'Image' : 'Text'),
       userId: i.sent_by,
       value: i.content
-    })
-  }
+    }))
 
   return conversation;
 }
