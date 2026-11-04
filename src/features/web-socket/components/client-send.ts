@@ -1,9 +1,11 @@
-import { Messages } from "../types/Messages.ts";
-import { RefObject, SetStateAction } from "react";
+import Messages from '../../../types/Messages.ts';
+import { RefObject, SetStateAction } from 'react';
+import logMessage from "./client-log.ts";
 
 export default function sendMessage(
   message: string,
   wsRef: RefObject<WebSocket | null>,
+  username: string,
   id: string,
   messageTarget: string | null | undefined,
   setMessages: (value: SetStateAction<Messages[]>) => void,
@@ -12,15 +14,15 @@ export default function sendMessage(
     const sentMessage: Messages = {
       userId: id,
       messageId: crypto.randomUUID(),
+      username: username,
       value: message,
-      origin: "Client",
+      origin: 'Client',
       timeSent: new Date(),
-      type: "user-message",
+      type: 'user-message',
       target: messageTarget,
     };
     wsRef.current.send(JSON.stringify(sentMessage));
-    setMessages((
-      prev,
-    ) => [...prev, sentMessage]);
+    setMessages((prev) => [sentMessage, ...prev]);
+    logMessage(sentMessage, messageTarget!)
   }
 }

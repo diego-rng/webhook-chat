@@ -1,41 +1,49 @@
-"use client";
-import { Messages } from "@features/web-socket/types/Messages.ts";
-import useClientConnection from "../features/web-socket/api/client-connection.ts";
-import { useUserContext } from "../features/web-socket/hooks/userContext.tsx"
+'use server'
+import { db } from '@/prisma/db.ts';
+import Providers from '@features/components/providers.tsx';
+import HomePage from '@features/components/home.tsx';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth.ts';
+import { redirect } from 'next/navigation';
+import User from '@/types/User.ts';
+import type { Char } from '@prisma/orm-postgres/target/codec-types';
+import handleDBConnection from "../features/web-socket/api/db-connection.ts";
 
-import { createContext, useContext, useRef, useState } from "react";
-import Link from "next/link";
+export default async function Home() {
+  const session = await getServerSession(authOptions);
 
-export default function Home() {
-  const port = 8080;
-  const [messages, setMessages] = useState<Messages[]>([]);
-  const [ping, setPing] = useState<number | null>(null);
-  const pendingPingRef = useRef<{ userId: string; startedAt: number } | null>(
-    null,
-  );
-  const [area, setArea] = useState<string>("");
-  const wsRef = useRef<WebSocket | null>(null);
-  const [activeUsers, setActiveUsers] = useState<Messages["userId"][] | null>(
-    null,
-  );
-  const [messageTarget, setMessageTarget] = useState<Messages["target"]>(null);
+  if (!session?.user?.username) {
+    redirect('/login');
+  }
 
-  useClientConnection(
-    port,
-    pendingPingRef,
-    useUserContext().userId,
-    setPing,
-    wsRef,
-    setMessages,
-    setActiveUsers,
-  );
+  const userTemp = await db.orm.public.UserCredentials.where({
+    username: session.user.username,
+  }).first();
+
+  if (!userTemp) redirect('/login');
+
+  const userInfo = await db.orm.public.User.where({
+    id: userTemp.user_id as Char<36>,
+  }).first();
+
+  if (!userInfo) redirect('/login')
+
+  const conversations = await handleDBConnection({parts: userTemp.user_id})
+  console.log(JSON.stringify(conversations))
+
+  const user: User = {
+    userId: userTemp.user_id,
+    username: userTemp.username,
+    name: userInfo.name!,
+    active: userInfo.active,
+    createdAt: new Date(userInfo.createdAt),
+    updatedAt: new Date(userInfo.updatedAt),
+    email: userInfo.email,
+  };
 
   return (
-    <div className="flex justify-center items-center h-screen transition-all">
-      <div className="transition-all flex flex-col p-2 bg-gray-900">
-        {activeUsers?.filter((u): u is string => !!u && u !== useContext(id))
-          .map((u) => <Link href={`${u}/chat`} key={u}>{u}</Link>)}
-      </div>
-    </div>
+    <Providers session={session}>
+      <HomePage user={user ?? null} db={conversations} />
+    </Providers>
   );
 }

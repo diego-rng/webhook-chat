@@ -1,5 +1,6 @@
-import { RefObject, SetStateAction } from "react";
-import { Messages } from "../types/Messages.ts";
+import { RefObject, SetStateAction } from 'react';
+import Messages from '../../../types/Messages.ts';
+import logMessage from './client-log.ts';
 
 export default function onClientMessage(
   event: MessageEvent,
@@ -9,12 +10,14 @@ export default function onClientMessage(
   setActiveUsers: (
     value: SetStateAction<(string | undefined)[] | null>,
   ) => void,
+  conversationId: string,
   setMessages: (value: SetStateAction<Messages[]>) => void,
-  
 ) {
   const payload: Messages = JSON.parse(String(event.data));
 
-  if (payload?.type === "latency-pong") {
+  if (!payload) return;
+
+  if (payload.type === 'latency-pong') {
     const pending = pendingPingRef.current;
 
     if (pending?.userId === payload.userId) {
@@ -35,23 +38,20 @@ export default function onClientMessage(
     return;
   }
 
-  if (payload.type === "message-confirmation") {
-    setMessages((prev) =>
-      prev.map((item) =>
-        item.messageId === payload.messageId ? { ...item, seen: true } : item
-      )
-    );
-    console.log("Server received the message!");
-    return;
-  }
+  if (!payload.value) return;
 
-  console.log(`Received a message from the server: ${event.data}`);
-  setMessages((
-    prev,
-  ) => [...prev, {
-    messageId: payload.messageId,
-    value: payload.value,
-    origin: payload.origin,
-    timeSent: new Date(),
-  }]);
+  if (payload.type === 'user-message') {
+    console.log(payload);
+    setMessages((prev) => [{
+      messageId: payload.messageId,
+      origin: payload.origin,
+      timeSent: new Date(),
+      seen: true,
+      target: payload.target,
+      type: payload.type,
+      userId: payload.userId, 
+      username: payload.username,
+      value: payload.value
+    }, ...prev]);
+  }
 }

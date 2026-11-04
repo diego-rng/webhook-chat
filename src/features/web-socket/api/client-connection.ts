@@ -1,19 +1,22 @@
-import { RefObject, SetStateAction, useEffect } from "react";
-import { Messages } from "../types/Messages.ts";
-import onClientMessage from "../components/client-message.ts";
-import onClientOpen from "../components/client-open.ts";
+import { RefObject, SetStateAction, useEffect } from 'react';
+import Messages from '../../../types/Messages.ts';
+import onClientMessage from '../components/client-message.ts';
+import onClientOpen from '../components/client-open.ts';
 
 export default function useClientConnection(
   port: number,
-  pendingPingRef: RefObject<{userId: string, startedAt: number} | null>,
+  pendingPingRef: RefObject<{ userId: string; startedAt: number } | null>,
   id: string,
   setPing: (value: SetStateAction<number | null>) => void,
   wsRef: RefObject<WebSocket | null>,
-  setMessages: (value: SetStateAction<Messages[]>) => void,
-  setActiveUsers: (value: SetStateAction<(string | undefined)[] | null>) => void,
+  setActiveUsers: (
+    value: SetStateAction<(string | undefined)[] | null>,
+  ) => void,
+  conversationId: string,
+  setMessages: (value: SetStateAction<Messages[]>) => void
 ) {
   useEffect(() => {
-    const ws = new WebSocket(`ws://localhost:${port}`);
+    const ws = new WebSocket(`ws://172.16.8.132:${port}`);
     let heartbeatInterval: ReturnType<typeof setInterval> | null = null;
     let heartbeatTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -24,10 +27,10 @@ export default function useClientConnection(
 
       const heartbeatMessage: Messages = {
         messageId: crypto.randomUUID(),
-        type: "latency-ping",
+        type: 'latency-ping',
         userId: id,
         timeSent: new Date(),
-        origin: "Client",
+        origin: 'Client',
       };
       pendingPingRef.current = { userId: id, startedAt: performance.now() };
       ws.send(JSON.stringify(heartbeatMessage));
@@ -40,8 +43,9 @@ export default function useClientConnection(
       }, 3000);
     }
     wsRef.current = ws;
-    ws.onopen = () =>
-      onClientOpen(ws, id, setMessages, sendHeartbeat, heartbeatTimeout);
+    ws.onopen = () => {
+      heartbeatInterval = onClientOpen(ws, id, conversationId, sendHeartbeat);
+    };
 
     ws.onmessage = (event) =>
       onClientMessage(
@@ -50,17 +54,19 @@ export default function useClientConnection(
         setPing,
         heartbeatTimeout,
         setActiveUsers,
-        setMessages,
+        conversationId,
+        setMessages
       );
 
-    ws.onclose = () => {
+    ws.onclose = (event) => {
+      if (event.code) console.error(`${event.code}`)
       setPing(null);
       pendingPingRef.current = null;
       if (heartbeatInterval !== null) clearInterval(heartbeatInterval);
       if (heartbeatTimeout !== null) clearTimeout(heartbeatTimeout);
-      console.log("WebSocket disconnected");
-    };
-    ws.onerror = (error) => console.error(`${error}`);
+      console.log('WebSocket disconnected');
+    };  
+    ws.onerror = (error) => console.error(`Error:${JSON.stringify(error)}`);
 
     console.log(`Listening at ${port}`);
 
@@ -70,5 +76,5 @@ export default function useClientConnection(
       pendingPingRef.current = null;
       ws.close();
     };
-  }, []);
+  }, [id, pendingPingRef, port, conversationId, setActiveUsers, setPing, wsRef]);
 }

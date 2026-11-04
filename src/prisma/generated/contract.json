@@ -19,6 +19,10 @@
     "User": {
       "model": "User",
       "namespace": "public"
+    },
+    "UserCredentials": {
+      "model": "UserCredentials",
+      "namespace": "public"
     }
   },
   "domain": {
@@ -232,6 +236,13 @@
                   "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
+              },
+              "sent_time": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
               }
             },
             "relations": {
@@ -284,6 +295,9 @@
                 },
                 "sent_by": {
                   "column": "sent_by"
+                },
+                "sent_time": {
+                  "column": "sent_time"
                 }
               },
               "namespaceId": "public",
@@ -338,7 +352,7 @@
                 }
               },
               "username": {
-                "nullable": true,
+                "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -418,6 +432,77 @@
               },
               "namespaceId": "public",
               "table": "User"
+            }
+          },
+          "UserCredentials": {
+            "fields": {
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "sql/char@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 36
+                  }
+                }
+              },
+              "password": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "user_id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "username": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "author": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "user_id"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "id": {
+                  "column": "id"
+                },
+                "password": {
+                  "column": "password"
+                },
+                "user_id": {
+                  "column": "user_id"
+                },
+                "username": {
+                  "column": "username"
+                }
+              },
+              "namespaceId": "public",
+              "table": "UserCredentials"
             }
           }
         }
@@ -518,6 +603,11 @@
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": false
+                },
+                "sent_time": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "dataType": "pg/timestamptz",
+                  "nullable": false
                 }
               },
               "foreignKeys": [],
@@ -567,7 +657,7 @@
                 "username": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
-                  "nullable": true
+                  "nullable": false
                 }
               },
               "foreignKeys": [],
@@ -584,6 +674,47 @@
                   ]
                 }
               ]
+            },
+            "UserCredentials": {
+              "columns": {
+                "id": {
+                  "codecId": "sql/char@1",
+                  "dataType": "pg/char",
+                  "nullable": false,
+                  "typeParams": {
+                    "length": 36
+                  }
+                },
+                "password": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "user_id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "username": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "username"
+                  ]
+                }
+              ]
             }
           }
         },
@@ -591,15 +722,15 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "4942b3758cb6afa87dc31effe491d34712b8f5e39515a77bc9ed85df3f474d39"
+    "storageHash": "a312bccc7dddc2ac950d17ef632dc116b9b00389317014230b7d7b71b63b64bb"
   },
   "execution": {
-    "executionHash": "d475e5239557779712a3900b383a0deee0de2b044153f1a6d77b7a17c5b11361",
+    "executionHash": "87cd33d33e62449f8b7a2543e05a354cb8b2f43e5366c91c380d5865fb28aff4",
     "mutations": {
       "defaults": [
         {
           "onCreate": {
-            "id": "uuidv7",
+            "id": "uuidv4",
             "kind": "generator"
           },
           "ref": {
@@ -610,7 +741,7 @@
         },
         {
           "onCreate": {
-            "id": "uuidv7",
+            "id": "uuidv4",
             "kind": "generator"
           },
           "ref": {
@@ -621,7 +752,7 @@
         },
         {
           "onCreate": {
-            "id": "uuidv7",
+            "id": "uuidv4",
             "kind": "generator"
           },
           "ref": {
@@ -643,7 +774,7 @@
         },
         {
           "onCreate": {
-            "id": "uuidv7",
+            "id": "uuidv4",
             "kind": "generator"
           },
           "ref": {
@@ -664,6 +795,17 @@
           "ref": {
             "entry": "User",
             "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "UserCredentials",
+            "field": "id",
             "namespace": "public"
           }
         }

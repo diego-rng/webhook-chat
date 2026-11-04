@@ -1,28 +1,22 @@
-import { SetStateAction } from "react";
-import { Messages } from "../types/Messages.ts";
+import Messages from '../../../types/Messages.ts';
 
-export default function onClientOpen(ws: WebSocket, id: string, setMessages: (value: SetStateAction<Messages[]>) => void, sendHeartbeat: () => void, heartbeatInterval: NodeJS.Timeout | null) {
-  console.log("[Client] Connected.");
+export default function onClientOpen(
+  ws: WebSocket,
+  id: string,
+  conversationId: string,
+  sendHeartbeat: () => void,
+): ReturnType<typeof setInterval> {
+  console.log('[Client] Connected.');
   const identMessage: Messages = {
     messageId: crypto.randomUUID(),
-    type: "identification-msg",
+    type: 'identification-msg',
     userId: id,
-    origin: "Client",
+    target: conversationId,
+    origin: 'Client',
     timeSent: new Date(),
   };
   ws.send(JSON.stringify(identMessage));
-  const openMessage: Messages = {
-    type: "opening-message",
-    messageId: crypto.randomUUID(),
-    value: `Attempting Connection`,
-    userId: id,
-    origin: "Client",
-    timeSent: new Date(),
-  };
-  ws.send(JSON.stringify(openMessage));
-  setMessages((
-    prev,
-  ) => [...prev, openMessage]);
+
   sendHeartbeat();
-  heartbeatInterval = setInterval(sendHeartbeat, 5000);
+  return setInterval(sendHeartbeat, 5000);
 }
