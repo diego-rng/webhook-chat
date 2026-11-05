@@ -73,6 +73,8 @@ export default function ChatPage({
     setMessages,
   );
 
+  console.log(messages);
+
   return (
     <div className="flex justify-center items-center h-screen transition-all">
       <div className="transition-all flex flex-col p-2 bg-gray-900">
@@ -81,7 +83,7 @@ export default function ChatPage({
             {ping === null ? 'Server not connected' : 'Connected'}
           </span>
         </div>
-        <div className="min-w-300 max-h-200 overflow-scroll transition-all gap-2 mb-4 min-h-30 flex flex-col-reverse">
+        <div className="min-w-300 max-w-[90vw] max-h-200 overflow-scroll transition-all gap-2 mb-4 min-h-30 flex flex-col-reverse">
           {messages.map((message, index) => {
             return (
               <span key={index} className="flex">
@@ -95,11 +97,9 @@ export default function ChatPage({
                   : (convMembers.find((i) => i.userId === message.userId)
                       ?.username ?? 'Unknown')}
                 ]{' '}
-                {message.type === 'user-message'
-                  ? message.value
-                  : message.value
-                    ? parseImage(message.value)
-                    : ''}{' '}
+                {isImage(message.value)
+                  ? parseImage(message.value!)
+                  : message.value}{' '}
                 <span className="justify-self-end ml-4 text-gray-500">
                   {message.seen ? 'Seen' : ''}
                 </span>
@@ -146,5 +146,8 @@ export default function ChatPage({
 }
 
 function parseImage(image: string) {
-  return <img src={image} className='max-h-20 max-w-20 ml-2' />;
+  return <img src={image} className="max-h-20 max-w-20 ml-2" />;
+}
+function isImage(value: string | null | undefined) {
+  return !!value && value.startsWith('data:image/');
 }

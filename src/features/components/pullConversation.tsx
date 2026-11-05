@@ -15,7 +15,7 @@ export default async function pullHistory(
       target: i.conversation_id,
       type: (i.content.startsWith('data:') ? 'user-image' : 'user-message'),
       userId: i.sent_by,
-      value: i.content
+      value: i.content.slice(1, -1)
     }))
 
   return conversation;
