@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import Messages from '../../types/Messages.ts';
 import sendMessage from '../../features/web-socket/components/client-send.ts';
 import useClientConnection from '../../features/web-socket/api/client-connection.ts';
@@ -14,7 +14,12 @@ interface ChatProps {
   messageHistory: Messages[];
   convMembers: User[];
 }
-export default function ChatPage({ user, target, messageHistory, convMembers }: ChatProps) {
+export default function ChatPage({
+  user,
+  target,
+  messageHistory,
+  convMembers,
+}: ChatProps) {
   const port = 4000;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data: _session, status } = useSession();
@@ -34,6 +39,28 @@ export default function ChatPage({ user, target, messageHistory, convMembers }: 
     null,
   );
 
+  function handleImage(event: ChangeEvent<HTMLInputElement>) {
+    const files = event.target.files;
+
+    if (!files || files.length === 0) return;
+
+    const selectedFile = files[0];
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      sendMessage(
+        reader.result as string,
+        wsRef,
+        user!.username,
+        user!.userId,
+        target!.conversationId,
+        setMessages,
+      );
+    };
+
+    reader.readAsDataURL(selectedFile);
+  }
 
   useClientConnection(
     port,
@@ -43,7 +70,7 @@ export default function ChatPage({ user, target, messageHistory, convMembers }: 
     wsRef,
     setActiveUsers,
     target!.conversationId,
-    setMessages
+    setMessages,
   );
 
   return (
@@ -62,8 +89,17 @@ export default function ChatPage({ user, target, messageHistory, convMembers }: 
                   hour: '2-digit',
                   minute: '2-digit',
                 })}{' '}
-                [{message.origin === 'Server' ? 'Server' : convMembers.find((i) => i.userId === message.userId)?.username ?? 'Unknown'}]{' '}
-                {message.value}{' '}
+                [
+                {message.origin === 'Server'
+                  ? 'Server'
+                  : (convMembers.find((i) => i.userId === message.userId)
+                      ?.username ?? 'Unknown')}
+                ]{' '}
+                {message.type === 'user-message'
+                  ? message.value
+                  : message.value
+                    ? parseImage(message.value)
+                    : ''}{' '}
                 <span className="justify-self-end ml-4 text-gray-500">
                   {message.seen ? 'Seen' : ''}
                 </span>
@@ -94,6 +130,11 @@ export default function ChatPage({ user, target, messageHistory, convMembers }: 
               }
             }}
           />
+          <input
+            type="file"
+            onChange={(event) => handleImage(event)}
+            accept="image/png, image/jpeg"
+          ></input>
           <div className="flex flex-col">
             <span>Latency:</span>
             <span>{ping === null ? '--' : `${ping}ms`}</span>
@@ -102,4 +143,8 @@ export default function ChatPage({ user, target, messageHistory, convMembers }: 
       </div>
     </div>
   );
+}
+
+function parseImage(image: string) {
+  return <img src={image} className='max-h-20 max-w-20 ml-2' />;
 }

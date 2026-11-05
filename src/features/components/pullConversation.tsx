@@ -13,7 +13,7 @@ export default async function pullHistory(
       timeSent: new Date(i.sent_time.epochMilliseconds),
       seen: true,
       target: i.conversation_id,
-      type: (i.attachment ? 'Image' : 'Text'),
+      type: (i.attachment ? 'user-image' : 'user-message'),
       userId: i.sent_by,
       value: i.content
     }))

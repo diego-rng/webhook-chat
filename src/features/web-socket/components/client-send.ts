@@ -18,7 +18,7 @@ export default function sendMessage(
       value: message,
       origin: 'Client',
       timeSent: new Date(),
-      type: 'user-message',
+      type: message.startsWith('data:') ? 'user-image' : 'user-message',
       target: messageTarget,
     };
     wsRef.current.send(JSON.stringify(sentMessage));
