@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import type Conversation from '../../types/Conversation.ts';
 import changeConversationName from './changeConversationName.tsx';
+import Link from 'next/link';
 
 interface ChatProps {
   user: User | null;
@@ -72,6 +73,11 @@ export default function ChatPage({
     reader.readAsDataURL(selectedFile);
   }
 
+  const messageClass = (check: boolean) => {
+    if (check === true) return ' bg-dark-purple ';
+    else return ' bg-light-gray ';
+  };
+
   const clickRef = () => {
     inputRef.current?.click();
   };
@@ -80,7 +86,7 @@ export default function ChatPage({
     return (
       <img
         src={image}
-        className="max-h-20 max-w-20"
+        className="max-h-30 max-w-30"
         onClick={() => {
           setImageModal(image);
           setImageModalActive(false);
@@ -108,45 +114,67 @@ export default function ChatPage({
 
   return (
     <div className="flex justify-center items-center h-screen transition-all">
-      <div className="transition-all flex flex-col p-2 bg-linear-to-tr from-items via-items to-dark-purple rounded-3xl">
-        <div className="mb-2 flex">
-          <span className="font-bold text-2xl flex">
-            {ping === null
-              ? 'Server not connected'
-              : `Connected - ${target?.conversationName ?? target?.conversationId}`}
-          </span>
-          <button
-            type="button"
-            onClick={() => setConversationModalActive(false)}
-            className="ml-2 p-2 bg-linear-to-r from-light-gray to-dark-purple rounded-full"
+      <div className="transition-all flex flex-col p-2 bg-linear-to-br from-items via-items to-dark-purple rounded-3xl">
+        <div className="flex flex-row justify-between">
+          <div className="mb-2 flex">
+            <span className="font-bold text-2xl flex">
+              {ping === null
+                ? 'Server not connected'
+                : `Connected - ${target?.conversationName ?? target?.conversationId}`}
+            </span>
+            <button
+              type="button"
+              onClick={() => setConversationModalActive(false)}
+              className="ml-2 p-2 bg-linear-to-r from-light-gray to-dark-purple rounded-full"
+            >
+              Change Conversation Name
+            </button>
+          </div>
+          <Link
+            href="/"
+            className="p-2 bg-linear-to-tr from-light-gray to-dark-purple rounded-full text-center justify-center"
           >
-            Change Conversation Name
-          </button>
+            Home
+          </Link>
         </div>
-        <div className="min-w-400 min-h-150 max-w-[90vw] max-h-200 overflow-scroll transition-all gap-2 mb-4 flex flex-col-reverse">
+        <div className="w-[90vw] h-[80vh] overflow-scroll transition-all gap-2 mb-4 flex flex-col-reverse">
           {messages.map((message, index) => {
             return (
               <div>
                 <span key={index} className="flex">
-                  [
-                  {message.origin === 'Server'
-                    ? 'Server'
-                    : (convMembers.find((i) => i.userId === message.userId)
-                        ?.username ?? 'Unknown')}
-                  ]{' '}
+                  {message.origin === 'Server' ? (
+                    '[Server]'
+                  ) : convMembers.find((i) => i.userId === message.userId)
+                      ?.username ? (
+                    <span className="mr-2 font-semibold text-lg">
+                      {
+                        convMembers.find((i) => i.userId === message.userId)
+                          ?.username
+                      }
+                    </span>
+                  ) : (
+                    'Unknown'
+                  )}{' '}
                   {message.timeSent.toLocaleTimeString('pt-BR', {
                     hour: '2-digit',
                     minute: '2-digit',
                   })}{' '}
                 </span>
-                <span className="inline-flex ml-3">
-                  {isImage(message.value)
-                    ? parseImage(message.value!)
-                    : message.value}
-                </span>
-                <span className="inline-flex ml-4 text-gray-500">
-                  {message.seen ? 'Cached' : ''}
-                </span>
+                <div
+                  className={
+                    messageClass(message.userId === user?.userId) +
+                    'flex flex-col w-fit p-2 rounded-2xl'
+                  }
+                >
+                  <span className="">
+                    {isImage(message.value)
+                      ? parseImage(message.value!)
+                      : message.value}
+                  </span>
+                  <span className="text-gray-500">
+                    {message.seen ? 'Cached' : ''}
+                  </span>
+                </div>
               </div>
             );
           })}
@@ -154,7 +182,7 @@ export default function ChatPage({
 
         <div className="flex gap-2">
           <textarea
-            className="bg-linear-to-r from-light-gray to-dark-purple min-w-[90%] rounded-4xl flex"
+            className="bg-light-gray min-w-[90%] rounded-4xl rounded-br-none flex"
             value={area}
             onChange={(e) => {
               setArea(e.target.value);
@@ -183,7 +211,7 @@ export default function ChatPage({
           />
           <button
             type="button"
-            className="p-2 bg-dark-purple rounded-full"
+            className="p-2 bg-light-gray rounded-full"
             onClick={clickRef}
           >
             +

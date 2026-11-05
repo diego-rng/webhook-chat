@@ -107,7 +107,7 @@ export default function HomePage({ user, db }: HomePageProps) {
 
   return (
     <div className="flex justify-center items-center h-screen transition-all">
-      <div className="transition-all flex flex-col p-2 rounded-3xl bg-items min-h-[80vh] min-w-[80vw]">
+      <div className="transition-all flex flex-col p-2 rounded-3xl bg-linear-to-br from-items via-items to-dark-purple h-[80vh] w-[80vw]">
         <div className="flex justify-between mt-2">
           <h1 className="mx-3 text-2xl font-bold">Welcome back!</h1>
           <button
