@@ -1,7 +1,13 @@
 import { db } from '@prisma/db.ts';
 import type { Char } from '@prisma/orm-postgres/target/codec-types';
 
-export default async function handleDBConnection(filters: {users?: { id?: string; createdAt?: string }; conversations?: { member: string[] }; parts: string; } | null = null, ) {
+export default async function handleDBConnection(
+  filters: {
+    users?: { id?: string; createdAt?: string };
+    conversations?: { member: string[] };
+    parts: string;
+  } | null = null,
+) {
   let users;
   let conversations;
   let messages;
@@ -37,7 +43,9 @@ export default async function handleDBConnection(filters: {users?: { id?: string
     } else if (filters.parts) {
       convos = await db.orm.public.ConversationParticipant.where({
         user_id: filters.parts,
-      }).all();
+      })
+        .include('conversation')
+        .all();
     }
   } else {
     users = await db.orm.public.User.include('created_conversations')

@@ -77,13 +77,18 @@ type HomePageProps = {
           sent_by: string;
         }[]
       | undefined;
-    convos:
-      | {
-          id: Char<36>;
-          conversation_id: string;
-          user_id: string;
-        }[]
-      | undefined;
+    convos: {
+      id: string & {
+        readonly __charLength: 36;
+      };
+      user_id: string;
+      conversation_id: string;
+      conversation: {
+        id: Char<36>;
+        created_by: string;
+        conversation_name: string | null;
+      };
+    }[];
   };
 };
 
@@ -102,27 +107,34 @@ export default function HomePage({ user, db }: HomePageProps) {
 
   return (
     <div className="flex justify-center items-center h-screen transition-all">
-      <div className="transition-all flex flex-col p-2 bg-gray-900 min-h-[80vh] min-w-[80vw]">
-        <div className="flex justify-end">
+      <div className="transition-all flex flex-col p-2 rounded-3xl bg-items min-h-[80vh] min-w-[80vw]">
+        <div className="flex justify-between mt-2">
+          <h1 className="mx-3 text-2xl font-bold">Welcome back!</h1>
           <button
             type="button"
-            className="p-2 bg-red-600 text-white cursor-pointer"
-            onClick={() => {signOut()}}
+            className="p-2 bg-red-600 rounded-full text-white cursor-pointer"
+            onClick={() => {
+              signOut();
+            }}
           >
             Sign Out
           </button>
         </div>
-        <div className="flex flex-row">
+        <div className="flex flex-col">
           {userConversations && userConversations.length >= 1
             ? userConversations.map((u) => (
-                <Link href={`${u.conversation_id}/chat`} className="bg-gray-500 px-1 py-2 mx-2" key={u.conversation_id}>
-                  {u.conversation_id}
+                <Link
+                  href={`${u.conversation_id}/chat`}
+                  className="border border-gray-700 bg-linear-to-r from-light-gray to-dark-purple rounded-full px-2 py-2 mx-2"
+                  key={u.conversation_id}
+                >
+                  {u.conversation.conversation_name} - {u.conversation_id}
                 </Link>
               ))
             : ''}
           <button
             type="button"
-            className="cursor-pointer px-2 bg-gray-500"
+            className="cursor-pointer px-2 bg-linear-to-r from-light-gray to-dark-purple border border-gray-700 rounded-full"
             onClick={() => setAddActive(false)}
           >
             +
@@ -146,11 +158,16 @@ export default function HomePage({ user, db }: HomePageProps) {
             value={addUsername}
             onChange={(e) => setAddUsername(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey && addUsername.trim().length >= 1) {
+              if (
+                e.key === 'Enter' &&
+                !e.shiftKey &&
+                addUsername.trim().length >= 1
+              ) {
                 e.preventDefault();
                 handleAddConversation(user!.userId, addUsername);
-                setAddUsername('')
-              }}}
+                setAddUsername('');
+              }
+            }}
           />
           <button
             type="button"

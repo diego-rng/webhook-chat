@@ -5,7 +5,7 @@ interface Member {
 }
 
 export default interface Conversation {
-  conversationId: string;
+  conversationId: string & {readonly __charLength: 36};
   conversationName: string | null;
   conversationCreator: string; 
   conversationMembers: Member[];
