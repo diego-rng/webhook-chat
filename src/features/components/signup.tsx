@@ -1,8 +1,8 @@
 'use client';
 import { useState } from 'react';
 import User from '../../types/User.ts';
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation"
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 export interface SignUpFunction {
   username: string;
@@ -48,28 +48,28 @@ export default function SignUpPage({ handleSignUp }: SignUpProps) {
     const res = await handleSignUp(obj);
 
     if (res.error) {
-      setError(res.error.toString())
+      setError(res.error.toString());
       return;
     }
 
     const finRes = await signIn('credentials', {
       username: username.trim(),
       password: password.trim(),
-      redirect: false
-    })
+      redirect: false,
+    });
 
     if (finRes?.error) {
-      setError('Sign in failed, try again in the login screen!')
+      setError('Sign in failed, try again in the login screen!');
       return;
     }
 
-    router.push('/')
-    router.refresh()
+    router.push('/');
+    router.refresh();
   }
 
   return (
-    <div className="flex items-center h-screen justify-center">
-      <div className="flex flex-col gap-2 bg-gray-900 p-3">
+    <div className="flex items-center h-screen justify-center bg-linear-to-br from-items via-items to-dark-purple">
+      <div className="flex flex-col gap-2 bg-items rounded-4xl border border-gray-600 p-4">
         <div className="flex text-center">
           <span className="font-bold text-3xl">Sign Up</span>
         </div>
@@ -78,7 +78,7 @@ export default function SignUpPage({ handleSignUp }: SignUpProps) {
             Email
             <input
               type="text"
-              className="bg-black"
+              className="bg-light-gray px-2 rounded-full border border-gray-700"
               onChange={(a) => setEmail(a.target.value)}
               name="email"
             />
@@ -87,16 +87,19 @@ export default function SignUpPage({ handleSignUp }: SignUpProps) {
             Username
             <input
               type="text"
-              className="bg-black"
+              className="bg-light-gray px-2 rounded-full border border-gray-700"
               onChange={(a) => setUsername(a.target.value)}
               name="username"
             />
           </label>
           <label className="flex flex-col gap-2 mt-2">
-            <span>Name <span className="inline text-xs text-gray-500">(optional)</span></span>
+            <span>
+              Name{' '}
+              <span className="inline text-xs text-gray-500">(optional)</span>
+            </span>
             <input
               type="text"
-              className="bg-black"
+              className="bg-light-gray px-2 rounded-full border border-gray-700"
               onChange={(a) => setName(a.target.value)}
               name="name"
             />
@@ -105,7 +108,7 @@ export default function SignUpPage({ handleSignUp }: SignUpProps) {
             Password
             <input
               type="password"
-              className="bg-black"
+              className="bg-light-gray px-2 rounded-full border border-gray-700"
               onChange={(a) => setPassword(a.target.value)}
               name="password"
             />
@@ -113,12 +116,17 @@ export default function SignUpPage({ handleSignUp }: SignUpProps) {
 
           {error && <p className="text-red-600 mt-2">{error}</p>}
 
-          <button
-            type="submit"
-            className="mt-2 bg-gray-600 px-2 py-1 rounded-full"
-          >
-            Sign up
-          </button>
+          <div className='flex flex-row justify-center place-items-center gap-2 mt-3'>
+            <button
+              type="submit"
+              className="bg-dark-purple hover:bg-dark-purple/65 border border-gray-700 px-2 py-1 cursor-pointer rounded-full"
+            >
+              Sign up
+            </button>
+            <a href="/login" className="text-blue-500 ml-2 text-xs cursor-pointer hover:underline">
+              Return to login page
+            </a>
+          </div>
         </form>
       </div>
     </div>

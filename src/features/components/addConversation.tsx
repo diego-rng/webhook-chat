@@ -24,8 +24,11 @@ async function handleAddConversation(userId: string, targetName: string) {
       conversation_id: res.id,
     });
     if (!res2) throw new Error('failed to create conversation!');
+
+    return res
   } catch (err) {
     console.error(err);
+    return err as string
   }
 }
 

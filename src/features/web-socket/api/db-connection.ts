@@ -4,14 +4,12 @@ import type { Char } from '@prisma/orm-postgres/target/codec-types';
 export default async function handleDBConnection(
   filters: {
     users?: { id?: string; createdAt?: string };
-    conversations?: { member: string[] };
     parts: string;
   } | null = null,
 ) {
   let users;
   let conversations;
   let messages;
-  let convos;
   if (filters) {
     if (filters.users) {
       const id = filters.users.id;
@@ -41,10 +39,8 @@ export default async function handleDBConnection(
         }
       }
     } else if (filters.parts) {
-      convos = await db.orm.public.ConversationParticipant.where({
-        user_id: filters.parts,
-      })
-        .include('conversation')
+      conversations = await db.orm.public.Conversation.include('participants').where(
+        (conversation) => conversation.participants.some((participant) => participant.user_id.eq(filters.parts)))
         .all();
     }
   } else {
@@ -55,7 +51,6 @@ export default async function handleDBConnection(
       .include('participants')
       .all();
     messages = await db.orm.public.Message.all();
-    convos = await db.orm.public.ConversationParticipant.all();
   }
-  return { users, conversations, messages, convos };
+  return { users, conversations, messages};
 }

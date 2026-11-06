@@ -30,8 +30,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex items-center h-screen justify-center">
-      <div className="flex flex-col gap-2 bg-gray-900 p-3">
+    <div className="flex items-center h-screen justify-center bg-linear-to-br from-items via-items to-dark-purple">
+      <div className="flex flex-col gap-2 bg-items rounded-4xl border border-gray-600 p-4">
         <div className="flex text-center">
           <span className="font-bold text-3xl">Log in</span>
         </div>
@@ -40,7 +40,7 @@ export default function LoginPage() {
             Username
             <input
               type="text"
-              className="bg-black"
+              className="bg-light-gray px-2 rounded-full border border-gray-700"
               onChange={(a) => setUsername(a.target.value)}
               name="username"
             />
@@ -49,7 +49,7 @@ export default function LoginPage() {
             Password
             <input
               type="password"
-              className="bg-black"
+              className="bg-light-gray px-2 rounded-full border border-gray-700"
               onChange={(a) => setPassword(a.target.value)}
               name="password"
             />
@@ -59,13 +59,13 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            className="mt-2 bg-gray-600 px-2 py-1 rounded-full"
+            className="mt-3 bg-dark-purple hover:bg-dark-purple/65 border border-gray-700 px-2 py-1 cursor-pointer rounded-full"
           >
             Sign in
           </button>
         </form>
         <a
-          className="text-blue-600 ml-2 text-sm cursor-pointer hover:underline"
+          className="text-blue-500 ml-2 text-xs cursor-pointer hover:underline"
           onClick={() => router.push('/login/signup')}
         >
           Sign up
