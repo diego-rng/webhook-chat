@@ -5,7 +5,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type User from '@/types/User.ts';
 import { Char } from '@prisma/orm-postgres/target/codec-types';
-import handleAddConversation from './addConversation.tsx';
+import handleAddConversation from '../actions/addConversation.ts';
+import AsyncCreatableSelect from 'react-select/async-creatable'
 
 type HomePageProps = {
   user: User | null;

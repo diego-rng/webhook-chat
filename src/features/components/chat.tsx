@@ -1,5 +1,5 @@
 'use client';
-import { ChangeEvent, useEffect, useRef, useState} from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import Messages from '../../types/Messages.ts';
 import sendMessage from '../../features/web-socket/components/client-send.ts';
 import useClientConnection from '../../features/web-socket/api/client-connection.ts';
@@ -7,9 +7,11 @@ import type User from '@/types/User.ts';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import type Conversation from '../../types/Conversation.ts';
-import changeConversationName from './changeConversationName.tsx';
+import changeConversationName from '../actions/changeConversationName.ts';
 import Link from 'next/link';
-import deleteConversation from './deleteConversation.tsx';
+import deleteConversation from '../actions/deleteConversation.ts';
+import ParticipantPicker, { UserOption } from './ParticipantPicker.tsx';
+import handleAddMember from "../actions/addMember.ts";
 
 interface ChatProps {
   user: User | null;
@@ -50,6 +52,8 @@ export default function ChatPage({
   );
   const [conversationError, setConversationError] = useState<string>('');
   const [deleteModalActive, setDeleteModalActive] = useState<boolean>(true);
+  const [addUserModalActive, setAddUserModalActive] = useState<boolean>(true);
+  const [addUsers, setAddUsers] = useState<readonly UserOption[]>([]);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -115,8 +119,6 @@ export default function ChatPage({
     router.push('/');
   }
 
-
-  
   useClientConnection(
     port,
     pendingPingRef,
@@ -141,6 +143,13 @@ export default function ChatPage({
             <button
               type="button"
               className="ml-2 p-2 bg-dark-purple rounded-full cursor-pointer"
+              onClick={() => setAddUserModalActive(false)}
+            >
+              Add User
+            </button>
+            <button
+              type="button"
+              className="ml-2 p-2 bg-dark-purple rounded-full cursor-pointer"
               onClick={() => setConversationModalActive(false)}
             >
               Change Conversation Name
@@ -161,46 +170,46 @@ export default function ChatPage({
           </Link>
         </div>
         <div className="w-[90vw] h-[80vh] overflow-scroll transition-all gap-2 mb-4 flex flex-col-reverse">
-            {messages.map((message, index) => {
-              return (
-                <div key={index}>
-                  <span className="flex">
-                    {message.origin === 'Server' ? (
-                      '[Server]'
-                    ) : convMembers.find((i) => i.userId === message.userId)
-                        ?.username ? (
-                      <span className="mr-2 font-semibold text-lg">
-                        {
-                          convMembers.find((i) => i.userId === message.userId)
-                            ?.username
-                        }
-                      </span>
-                    ) : (
-                      'Unknown'
-                    )}{' '}
-                    {message.timeSent.toLocaleTimeString('pt-BR', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}{' '}
+          {messages.map((message, index) => {
+            return (
+              <div key={index}>
+                <span className="flex">
+                  {message.origin === 'Server' ? (
+                    '[Server]'
+                  ) : convMembers.find((i) => i.userId === message.userId)
+                      ?.username ? (
+                    <span className="mr-2 font-semibold text-lg">
+                      {
+                        convMembers.find((i) => i.userId === message.userId)
+                          ?.username
+                      }
+                    </span>
+                  ) : (
+                    'Unknown'
+                  )}{' '}
+                  {message.timeSent.toLocaleTimeString('pt-BR', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}{' '}
+                </span>
+                <div
+                  className={
+                    messageClass(message.userId === user?.userId) +
+                    'flex flex-col w-fit p-2 rounded-2xl'
+                  }
+                >
+                  <span className="">
+                    {isImage(message.value)
+                      ? parseImage(message.value!)
+                      : message.value}
                   </span>
-                  <div
-                    className={
-                      messageClass(message.userId === user?.userId) +
-                      'flex flex-col w-fit p-2 rounded-2xl'
-                    }
-                  >
-                    <span className="">
-                      {isImage(message.value)
-                        ? parseImage(message.value!)
-                        : message.value}
-                    </span>
-                    <span className="text-gray-500">
-                      {message.seen ? 'Cached' : ''}
-                    </span>
-                  </div>
+                  <span className="text-gray-500">
+                    {message.seen ? 'Cached' : ''}
+                  </span>
                 </div>
-              );
-            })}
+              </div>
+            );
+          })}
         </div>
 
         <div className="flex gap-2">
@@ -314,19 +323,46 @@ export default function ChatPage({
             <div className="flex flex-row self-center gap-2">
               <button
                 type="button"
-                className="px-2 py-1 font-semibold cursor-pointer text-white bg-red-700 border border-gray-500 rounded-full "
+                className="px-2 py-1 font-semibold cursor-pointer text-white bg-red-700 border border-gray-500 rounded-full"
                 onClick={handleDeleteConversation}
               >
                 Yes
               </button>
               <button
                 type="button"
-                className="px-2 py-1 font-semibold cursor-pointer bg-light-gray border border-gray-500 rounded-full "
+                className="px-2 py-1 font-semibold cursor-pointer bg-light-gray border border-gray-500 rounded-full"
                 onClick={() => setDeleteModalActive(true)}
               >
                 No
               </button>
             </div>
+          </div>
+        </div>
+      </div>
+      <div
+        hidden={addUserModalActive}
+        className="bg-black/50 flex flex-col justify-center items-center h-screen w-screen absolute"
+      >
+        <div
+          className="h-screen w-screen absolute z-1"
+          onClick={() => setAddUserModalActive(true)}
+        />
+        <div className="flex flex-col items-center justify-center rounded-4xl border border-gray-700 text-center p-5 pt-7 bg-items gap-2 z-2">
+          <div className="flex flex-col gap-1">
+            <label>Users:</label>
+            <ParticipantPicker onChange={(e) => setAddUsers(e)} initialMembers={convMembers} />
+            <button
+              type="button"
+              className="px-2 py-1 font-semibold cursor-pointer bg-light-gray border border-gray-500 rounded-full"
+              onClick={() => {
+                handleAddMember(target!.conversationId, addUsers)
+                setTimeout(() => {
+                  router.refresh();
+                }, 300)
+              }}
+            >
+              Add Users
+            </button>
           </div>
         </div>
       </div>
@@ -337,4 +373,3 @@ export default function ChatPage({
 function isImage(value: string | null | undefined) {
   return !!value && value.startsWith('data:image/');
 }
-

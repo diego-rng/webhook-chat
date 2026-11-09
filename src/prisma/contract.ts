@@ -38,7 +38,12 @@ export const contract = defineContract({}, ({ field, model, rel }) => {
       user_id: field.text(),
       conversation_id: field.text(),
     },
-  });
+  }).sql(({ cols, constraints }) => ({
+    table: 'ConversationParticipant',
+    indexes: [
+      constraints.index([cols.user_id, cols.conversation_id], { unique: true }),
+    ],
+  }));
 
   const UserCredentials = model('UserCredentials', {
     fields: {

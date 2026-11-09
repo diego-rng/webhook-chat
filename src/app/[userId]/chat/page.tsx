@@ -6,8 +6,8 @@ import { getServerSession } from 'next-auth';
 import Providers from '@features/components/providers.tsx';
 import { redirect } from 'next/navigation';
 import Conversation from '../../../types/Conversation.ts';
-import pullHistory from '../../../features/components/pullConversation.tsx';
-import lookUpMembers from "../../../features/components/lookUpMembers.tsx";
+import pullHistory from '../../../features/actions/pullConversation.ts';
+import lookUpMembers from "../../../features/actions/lookUpMembers.ts";
 
 export default async function Chat({
   params,
